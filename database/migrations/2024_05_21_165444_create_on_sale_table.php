@@ -18,7 +18,8 @@ return new class extends Migration
             $table->foreignId('laptop_id')->constrained()->cascadeOnDelete();
             $table->double('discount');
             $table->dateTime('time');
-            $table->timestamps();
+            $table->timestamps('create_at');
+            $table->timestamps('update_at');
         });
     }
 

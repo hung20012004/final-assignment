@@ -13,20 +13,29 @@ return new class extends Migration
     {
         Schema::create('manufactories', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->timestamps();
+            $table->string('name')
+                  ->unique();
+            $table->string('descripton')
+                  ->nullable();
+            $table->timestamps('started_at');
         });
         Schema::create('categories', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->timestamps();
+            $table->string('name')
+                  ->unique();
+            $table->string('description')
+                  ->nullable();
         });
         Schema::create('laptops', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->foreignId('category_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('manufactory_id')->constrained()->cascadeOnDelete();
-            $table->timestamps();
+            $table->foreignId('category_id')
+                  ->constrained()
+                  ->cascadeOnUpdate();
+            $table->foreignId('manufactory_id')
+                  ->constrained()
+                  ->cascadeOnUpdate();
+            $table->timestamps('create_at');
         });
     }
 

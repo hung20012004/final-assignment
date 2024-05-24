@@ -13,10 +13,12 @@ return new class extends Migration
     {
         Schema::create('teams', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->index();
+            $table->foreignId('user_id')
+                  ->index();
             $table->string('name');
-            $table->boolean('personal_team');
-            $table->timestamps();
+            $table->integer('personal_team');
+            $table->timestamps('create_at');
+            $table->timestamps('update_at');
         });
     }
 
