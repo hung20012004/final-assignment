@@ -12,7 +12,14 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        //
+        $middleware->alias([
+            'checklaptop' => \App\Http\Middleware\CheckLaptop::class
+        ]);
+        $middleware->validateCsrfTokens(except: [
+            'stripe/',
+            'http://example.com/foo/bar/',
+            'http://example.com/foo/',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

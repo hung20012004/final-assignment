@@ -18,8 +18,7 @@ return new class extends Migration
             $table->foreignId('user_id')
                   ->unique();
             $table->integer('role')->nullable();
-            $table->timestamps('create_at');
-            $table->timestamps('update_at');
+            $table->timestamps();
         });
     }
 

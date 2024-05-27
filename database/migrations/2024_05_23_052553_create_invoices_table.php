@@ -18,8 +18,7 @@ return new class extends Migration
             $table->foreignId('provider_id')
                   ->constrained();
             $table->integer('state');
-            $table->timestamps('create_at');
-            $table->timestamps('update_at');
+            $table->timestamps();
         });
         Schema::create('invoice_detail', function (Blueprint $table) {
             $table->id();
@@ -29,7 +28,6 @@ return new class extends Migration
                   ->cascadeOnDelete();
             $table->integer('quantity');
             $table->decimal('price');
-            $table->timestamps();
         });
     }
 

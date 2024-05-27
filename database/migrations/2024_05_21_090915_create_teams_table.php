@@ -17,8 +17,7 @@ return new class extends Migration
                   ->index();
             $table->string('name');
             $table->integer('personal_team');
-            $table->timestamps('create_at');
-            $table->timestamps('update_at');
+            $table->timestamps();
         });
     }
 

@@ -18,9 +18,9 @@ return new class extends Migration
             $table->string('phone')
                   ->unique();
             $table->string('email')
-                  ->unique();
-            $table->timestamps('create_at');
-            $table->timestamps('update_at');
+                  ->unique()
+                  ->nullable();
+            $table->timestamps();
         });
     }
 

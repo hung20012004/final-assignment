@@ -17,7 +17,8 @@ return new class extends Migration
                   ->unique();
             $table->string('descripton')
                   ->nullable();
-            $table->timestamps('started_at');
+            $table->timestamp('started_at')
+                  ->nullable();
         });
         Schema::create('categories', function (Blueprint $table) {
             $table->id();
@@ -29,13 +30,13 @@ return new class extends Migration
         Schema::create('laptops', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->foreignId('category_id')
-                  ->constrained()
-                  ->cascadeOnUpdate();
-            $table->foreignId('manufactory_id')
-                  ->constrained()
-                  ->cascadeOnUpdate();
-            $table->timestamps('create_at');
+            // $table->foreignId('category_id')
+            //       ->constrained()
+            //       ->cascadeOnUpdate();
+            // $table->foreignId('manufactory_id')
+            //       ->constrained()
+            //       ->cascadeOnUpdate();
+            $table->timestamps();
         });
     }
 

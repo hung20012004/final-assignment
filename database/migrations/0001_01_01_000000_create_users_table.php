@@ -3,13 +3,14 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\QueryException;
 
 return new class extends Migration
 {
     /**
      * Run the migrations.
      */
-    public function up(): void
+    public function up( ): void
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
@@ -24,8 +25,7 @@ return new class extends Migration
                   ->nullable();
             $table->string('profile_photo_path', 2048)
                   ->nullable();
-            $table->timestamps('create_at');
-            $table->timestamps('update_at');
+            $table->timestamps();
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {

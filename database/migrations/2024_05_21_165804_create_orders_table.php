@@ -22,8 +22,7 @@ return new class extends Migration
                   ->cascadeOnUpdate()
                   ->cascadeOnDelete();
             $table->integer('state');
-            $table->timestamps('create_at');
-            $table->timestamps('update_at');
+            $table->timestamps();
         });
         Schema::create('order_detail', function (Blueprint $table) {
             $table->id();

@@ -21,8 +21,7 @@ return new class extends Migration
                   ->unique();
             $table->string('role')
                   ->nullable();
-            $table->timestamps('create_at');
-            $table->timestamps('update_at');
+            $table->timestamps();
         });
     }
 

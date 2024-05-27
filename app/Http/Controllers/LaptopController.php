@@ -8,16 +8,14 @@ use Illuminate\Http\Request;
 
 class LaptopController extends Controller
 {
-    public function __construct()
+    public function Create(Request $request)
     {
-        $this->middleware('');
-    }
-    public function Create($laptops)
-    {
+        $laptops = $request->input('laptops');
         foreach ($laptops as $index => $laptop) {
             Laptop::create([
                 'name' => $laptop,
             ]);
         }
+        return view('thanhcong');
     }
 }

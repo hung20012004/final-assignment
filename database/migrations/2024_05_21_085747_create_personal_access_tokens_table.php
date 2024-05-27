@@ -23,7 +23,7 @@ return new class extends Migration
                   ->nullable();
             $table->timestamp('expires_at')
                   ->nullable();
-            $table->timestamps('create_at');
+            $table->timestamps();
         });
     }
 
