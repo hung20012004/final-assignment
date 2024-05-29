@@ -3,6 +3,7 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Symfony\Component\Routing\Alias;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -12,7 +13,14 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        //
+        $middleware->alias([
+            'role' => \App\Http\Middleware\CheckUserRole::class,
+            'accountant' => \App\Http\Middleware\CheckAccountantRole::class,
+            'seller' => \App\Http\Middleware\CheckSellerRole::class,
+            'manager' => \App\Http\Middleware\CheckManagerRole::class,
+            'warehouse' => \App\Http\Middleware\CheckWarehouseStaffRole::class,
+            'customer-service' => \App\Http\Middleware\CheckCustomerServiceRole::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

@@ -7,6 +7,8 @@ export default defineConfig({
             input: [
                 'resources/css/app.css',
                 'resources/js/app.js',
+                'resources/css/sb-admin-2.min.css',
+                'resources/js/sb-admin-2.min.js',
             ],
             refresh: true,
         }),
