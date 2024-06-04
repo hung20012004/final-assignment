@@ -1,7 +1,7 @@
 <x-app-layout>
     <div class="container">
         <h1>Users</h1>
-        <a href="" class="btn btn-primary">Add New User</a>
+        <a href="{{ route('users.create') }}" class="btn btn-primary">Add New User</a>
         @if (session('success'))
             <div class="alert alert-success mt-2">
                 {{ session('success') }}
