@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 
 class LaptopController extends Controller
 {
-    public function Create(Request $request)
+    public function __construct(Request $request)
     {
 
     }
