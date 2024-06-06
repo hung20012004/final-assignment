@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 
 class LaptopController extends Controller
 {
-    public function __construct()
+    public function __construct(Request $request)
     {
 
     }
@@ -19,5 +19,6 @@ class LaptopController extends Controller
                 'name' => $laptop,
             ]);
         }
+        return view('thanhcong');
     }
 }

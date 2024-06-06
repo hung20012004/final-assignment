@@ -20,6 +20,12 @@ return Application::configure(basePath: dirname(__DIR__))
             'manager' => \App\Http\Middleware\CheckManagerRole::class,
             'warehouse' => \App\Http\Middleware\CheckWarehouseStaffRole::class,
             'customer-service' => \App\Http\Middleware\CheckCustomerServiceRole::class,
+            'checklaptop' => \App\Http\Middleware\CheckLaptop::class
+        ]);
+        $middleware->validateCsrfTokens(except: [
+            'stripe/',
+            'http://example.com/foo/bar/',
+            'http://example.com/foo/',
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
