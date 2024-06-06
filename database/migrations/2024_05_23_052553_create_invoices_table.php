@@ -13,11 +13,21 @@ return new class extends Migration
     {
         Schema::create('invoices', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')
+                  ->constrained();
+            $table->foreignId('provider_id')
+                  ->constrained();
+            $table->integer('state');
             $table->timestamps();
         });
         Schema::create('invoice_detail', function (Blueprint $table) {
             $table->id();
-            $table->timestamps();
+            $table->foreignId('laptop_id');
+            $table->foreignId('invoice_id')
+                  ->constrained()
+                  ->cascadeOnDelete();
+            $table->integer('quantity');
+            $table->decimal('price');
         });
     }
 

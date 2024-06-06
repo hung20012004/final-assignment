@@ -5,6 +5,8 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\ManagerController;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use App\Http\Controllers\LaptopController;
+use App\Http\Middleware\CheckLaptop;
 
 Route::get('/', function () {
     return view('welcome');
@@ -39,5 +41,7 @@ Route::middleware([
     Route::middleware(['customer-service'])->group(function () {
 
     });
-
+    // Route::middleware('checklaptop')->group(function(){
+    //     Route::get('/savelaptop',[LaptopController::class, 'Create'])->name('SaveLaptop');
+    // });
 });
