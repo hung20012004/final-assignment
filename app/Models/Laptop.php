@@ -29,4 +29,8 @@ class Laptop extends Model
 
         ];
     }
+
+    //  public function order_detail() {
+    //     return $this->belongsTo(Order::class);
+    // }
 }
