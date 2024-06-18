@@ -33,7 +33,7 @@ Route::middleware([
 
     });
     Route::middleware(['warehouse'])->group(function () {
-
+        Route::resource('laptops', LaptopController::class);
     });
     Route::middleware(['customer-service'])->group(function () {
 
