@@ -16,7 +16,7 @@ class Order extends Model
     protected $fillable = [
         'user_id',
         'customer_id',
-        'state',
+        'state'
     ];
     
     /**
@@ -24,11 +24,11 @@ class Order extends Model
      *
      * @var array<string, class-string>
      */
-    protected $dispatchesEvents = [
-        // 'created' => CustomerCreated::class,
-        // 'updated' => CustomerUpdated::class,
-        // 'deleted' => CustomerDeleted::class,
-    ];
+    // protected $dispatchesEvents = [
+    //     // 'created' => CustomerCreated::class,
+    //     // 'updated' => CustomerUpdated::class,
+    //     // 'deleted' => CustomerDeleted::class,
+    // ];
 
     /**
      * Get the attributes that should be cast.
@@ -59,9 +59,6 @@ class Order extends Model
      *
      * @var array<int, string>
      */
-    protected $fillable = [
-        'state',
-    ];
     protected $hidden = [
     ];
     /**
@@ -78,10 +75,5 @@ class Order extends Model
      *
      * @return array<string, string>
      */
-    protected function casts(): array
-    {
-        return [
-
-        ];
-    }
+    
 }
