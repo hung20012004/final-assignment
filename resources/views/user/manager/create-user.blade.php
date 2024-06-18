@@ -12,8 +12,13 @@
                 <input type="email" name="email" id="email" class="form-control">
             </div>
             <div class="form-group">
-                <label for="email">Role:</label>
-                <input type="text" name="role" id="role" class="form-control">
+                <label for="role">Role:</label>
+                <select name="role" id="role" class="form-control">
+                    <option value="seller">Seller</option>
+                    <option value="warehouse">Warehouse staff</option>
+                    <option value="accountant">Accountant</option>
+                    <option value="customer-service">Customer service staff</option>
+                </select>
             </div>
             <!-- Thêm các trường thông tin khác của người dùng nếu cần -->
             <button type="submit" class="btn btn-primary">Create</button>

@@ -24,7 +24,7 @@ return new class extends Migration
             $table->integer('state');
             $table->timestamps();
         });
-        Schema::create('order_detail', function (Blueprint $table) {
+        Schema::create('order_details', function (Blueprint $table) {
             $table->id();
             $table->foreignId('order_id')
                   ->constrained()
@@ -34,6 +34,7 @@ return new class extends Migration
                   ->cascadeOnDelete();
             $table->integer('quantity');
             $table->decimal('price');
+            $table->timestamps();
         });
     }
 

@@ -4,6 +4,7 @@
 
         <form action="{{ route('users.update', $user) }}" method="POST">
             @csrf
+            @method('PUT')
             <div class="form-group">
                 <label for="name">Name:</label>
                 <input type="text" name="name" id="name" value="{{ $user->name }}" class="form-control">

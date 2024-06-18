@@ -11,7 +11,7 @@
             <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
                 <div class="bg-white py-2 collapse-inner rounded">
                     <a class="collapse-item" href="{{ route('users.index') }}">Management</a>
-                    <a class="collapse-item" href="cards.html">Tasks</a>
+                    <a class="collapse-item" href="{{ route('tasks.index') }}">Tasks</a>
                 </div>
             </div>
         </li>
