@@ -53,4 +53,35 @@ class Order extends Model
      public function order_detail() {
         return $this->hasMany(OrderDetail::class);
     }
+      use HasFactory;
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = [
+        'state',
+    ];
+    protected $hidden = [
+    ];
+    /**
+     * The event map for the model.
+     *
+     * @var array<string, class-string>
+     */
+    protected $dispatchesEvents = [
+
+    ];
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+
+        ];
+    }
 }
