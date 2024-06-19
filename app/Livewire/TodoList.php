@@ -16,6 +16,9 @@ class TodoList extends Component
             $this->newTask = '';
         }
     }
+
+
+
     public function removeTask($index)
     {
         unset($this->tasks[$index]);

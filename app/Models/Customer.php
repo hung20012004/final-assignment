@@ -17,9 +17,9 @@ class Customer extends Model
         'name',
         'email',
         'address',
+          'phone'
     ];
     protected $hidden = [
-        'phone',
     ];
     /**
      * The event map for the model.
@@ -27,9 +27,12 @@ class Customer extends Model
      * @var array<string, class-string>
      */
     protected $dispatchesEvents = [
-        'created' => CustomerCreated::class,
-        'updated' => CustomerUpdated::class,
-        'deleted' => CustomerDeleted::class,
+        // 'created' => CustomerCreated::class,
+        // 'updated' => CustomerUpdated::class,
+        // 'deleted' => CustomerDeleted::class,
+        // 'created' => CustomerCreated::class,
+        // 'updated' => CustomerUpdated::class,
+        // 'deleted' => CustomerDeleted::class,
     ];
 
     /**
@@ -42,5 +45,8 @@ class Customer extends Model
         return [
 
         ];
+    }
+    public function order() {
+         return $this->hasMany(Order::class);
     }
 }
