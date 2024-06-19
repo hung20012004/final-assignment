@@ -25,7 +25,7 @@ class LaptopController extends Controller
             $query->where('name', 'like', "%{$search}%")
                 ->orWhereHas('category', function ($q) use ($search) {
                     $q->where('name', 'like', "%{$search}%");
-                })  
+                })
                 ->orWhereHas('manufactory', function ($q) use ($search) {
                     $q->where('name', 'like', "%{$search}%");
                 });
@@ -45,18 +45,7 @@ class LaptopController extends Controller
 
         return view('user.warehouse.create-laptop', compact('manufactories', 'categories'));
     }
-    // public function Create($laptops)
-    // {
-    //     foreach ($laptops as $index => $laptop) {
-    //         Laptop::create([
-    //             'name' => $laptop,
-    //         ]);
-    //     }
-    //     return view('thanhcong');
-    // }
-     /**
-     * Store a newly created resource in storage.
-     */
+
     public function store(Request $request)
     {
         $validatedData = $request->validate([
@@ -116,11 +105,8 @@ class LaptopController extends Controller
             'manufactory_id' => 'required|exists:manufactories,id',
             'category_id' => 'required|exists:categories,id',
         ]);
-        // dd($request,$laptop);
-        // Cập nhật thông tin người dùng với dữ liệu mới
         $laptop->update($validatedData);
 
-        // Chuyển hướng người dùng đến trang hiển thị thông tin chi tiết của họ
         return redirect()->route('laptops.index', $laptop)->with('success', 'Laptop updated successfully!');
     }
     /**
@@ -128,10 +114,15 @@ class LaptopController extends Controller
      */
     public function destroy(Laptop $laptop)
     {
-         // Xóa người dùng
          $laptop->delete();
-
-         // Chuyển hướng người dùng đến trang danh sách người dùng
          return redirect()->route('laptops.index')->with('success', 'Laptop deleted successfully!');
+    }
+    public function statistics()
+    {
+        $laptopsByCategory = Category::withCount('laptops')->get();
+
+        $laptopsByManufactory = Manufactory::withCount('laptops')->get();
+
+        return view('user.manager.statistic-laptop', compact('laptopsByCategory', 'laptopsByManufactory'));
     }
 }

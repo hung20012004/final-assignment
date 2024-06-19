@@ -1,12 +1,14 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use app\Models\User;
+use App\Models\User;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\UserVerificationMail;
 use App\Exports\UsersExport;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -31,35 +33,38 @@ class UserController extends Controller
 
     public function store(Request $request)
     {
-        //dd($request->input('role'));
-        // $validatedData = $request->validate([
+        // $request->validate([
         //     'name' => 'required|string|max:255',
         //     'email' => 'required|email|unique:users,email',
-        //     'password' => 'required|string|min:8', // Yêu cầu mật khẩu có ít nhất 8 ký tự
         //     'role' => 'required|string|in:admin,user',
         // ]);
+
         $user = new User();
         $user->name = $request->input('name');
         $user->email = $request->input('email');
-        $user->password = Str::password(8);
+        $pass=Str::random(8);
+        $user->password = Hash::make($pass);
         $user->role = $request->input('role');
         $user->save();
-        return redirect()->route('users.index', $user)->with('success', 'User created successfully!');
+        try{
+            Mail::to($user->email)->send(new UserVerificationMail($user,$pass));
+        }
+        catch(\Exception $e){
+
+        }
+
+        return redirect()->route('users.index')->with('success', 'User created successfully!');
     }
+
     public function show(User $user)
     {
-        $user = User::findOrFail($user->id);
-
         return view('user.manager.show-user', compact('user'));
     }
 
     public function edit(User $user)
     {
-        $user = User::findOrFail($user->id);
-
         return view('user.manager.edit-user', compact('user'));
     }
-
 
     public function update(Request $request, User $user)
     {
@@ -67,6 +72,7 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $user->id,
         ]);
+
         $user->update($validatedData);
         return redirect()->route('users.index', $user)->with('success', 'User information updated successfully!');
     }
@@ -76,10 +82,12 @@ class UserController extends Controller
         $user->delete();
         return redirect()->route('users.index')->with('success', 'User deleted successfully!');
     }
+
     public function export()
     {
         return Excel::download(new UsersExport, 'users.xlsx');
     }
+
     public function statistics()
     {
         $totalUsers = User::count();
@@ -92,7 +100,6 @@ class UserController extends Controller
                                 ->whereYear('created_at', date('Y'))
                                 ->groupBy(DB::raw('MONTH(created_at)'))
                                 ->get();
-        return view('user.manager.statistics', compact('totalUsers', 'usersByRole', 'usersCreatedLastMonth', 'usersCreatedByMonth'));
+        return view('user.manager.statistic-user', compact('totalUsers', 'usersByRole', 'usersCreatedLastMonth', 'usersCreatedByMonth'));
     }
-
 }

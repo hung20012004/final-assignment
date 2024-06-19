@@ -25,6 +25,11 @@
         <x-accountant-sidebar/>
         <x-customer-service-sidebar/>
         <x-warehouse-staff-sidebar/>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ route('profile.show') }}">
+                <i class="fa-solid fa-user"></i>
+                <span>Profile</span></a>
+        </li>
 
     <hr class="sidebar-divider d-none d-md-block">
     <div class="text-center d-none d-md-inline">

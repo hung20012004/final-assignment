@@ -9,9 +9,9 @@ return [
     | Fortify Guard
     |--------------------------------------------------------------------------
     |
-    | Here you may specify which authentication guard Fortify will use while
-    | authenticating users. This value should correspond with one of your
-    | guards that is already present in your "auth" configuration file.
+    | Specify which authentication guard Fortify will use while authenticating
+    | users. This value should correspond with one of your configured guards
+    | in your "auth" configuration file.
     |
     */
 
@@ -22,9 +22,9 @@ return [
     | Fortify Password Broker
     |--------------------------------------------------------------------------
     |
-    | Here you may specify which password broker Fortify can use when a user
-    | is resetting their password. This configured value should match one
-    | of your password brokers setup in your "auth" configuration file.
+    | Specify which password broker Fortify can use when a user is resetting
+    | their password. This configured value should match one of your configured
+    | password brokers in your "auth" configuration file.
     |
     */
 
@@ -39,35 +39,20 @@ return [
     | application's "username" field. Typically, this might be the email
     | address of the users but you are free to change this value here.
     |
-    | Out of the box, Fortify expects forgot password and reset password
-    | requests to have a field named 'email'. If the application uses
+    | By default, Fortify expects forgot password and reset password
+    | requests to have a field named 'email'. If your application uses
     | another name for the field you may define it below as needed.
     |
     */
 
     'username' => 'email',
 
-    'email' => 'email',
-
-    /*
-    |--------------------------------------------------------------------------
-    | Lowercase Usernames
-    |--------------------------------------------------------------------------
-    |
-    | This value defines whether usernames should be lowercased before saving
-    | them in the database, as some database system string fields are case
-    | sensitive. You may disable this for your application if necessary.
-    |
-    */
-
-    'lowercase_usernames' => true,
-
     /*
     |--------------------------------------------------------------------------
     | Home Path
     |--------------------------------------------------------------------------
     |
-    | Here you may configure the path where users will get redirected during
+    | This value defines the path where users will get redirected during
     | authentication or password reset when the operations are successful
     | and the user is authenticated. You are free to change this value.
     |
@@ -97,7 +82,7 @@ return [
     |
     | Here you may specify which middleware Fortify will assign to the routes
     | that it registers with the application. If necessary, you may change
-    | these middleware but typically this provided default is preferred.
+    | these middleware but typically the default provided is sufficient.
     |
     */
 
@@ -146,14 +131,46 @@ return [
     'features' => [
         Features::registration(),
         Features::resetPasswords(),
-        // Features::emailVerification(),
+        Features::emailVerification(),
         Features::updateProfileInformation(),
         Features::updatePasswords(),
         Features::twoFactorAuthentication([
-            'confirm' => true,
             'confirmPassword' => true,
-            // 'window' => 0,
         ]),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Laravel Fortify Email Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Here you may configure your mail driver, and all related mail driver
+    | options. You're free to add more mailers to this array if needed.
+    |
+    */
+
+    'mail' => [
+        'from' => [
+            'address' => env('MAIL_FROM_ADDRESS', 'hello@example.com'),
+            'name' => env('MAIL_FROM_NAME', 'Example'),
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Laravel Fortify Password Reset Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Here you may configure the email sending options for password reset
+    | emails. For example, you may set a specific name and address that should
+    | be used when sending password reset emails.
+    |
+    */
+
+    'password_reset' => [
+        'expire' => 60,
+        'path' => '/reset-password',
+        'email' => 'emails.password-reset', // Blade view for the reset email
     ],
 
 ];

@@ -1,7 +1,9 @@
 <x-app-layout>
     <div class="container mt-5">
-        <h1 class="mb-4">User Statistics</h1>
-
+        <x-breadcrumb :links="[
+            ['label' => __('Dashboard'), 'url' => route('dashboard')],
+            ['label' => __('User Statistics'), 'url' => '']
+        ]"/>
         <!-- Total Users Card -->
         <div class="card mb-4 shadow-sm">
             <div class="card-header bg-primary text-white">

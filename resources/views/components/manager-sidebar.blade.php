@@ -25,7 +25,7 @@
                 data-parent="#accordionSidebar">
                 <div class="bg-white py-2 collapse-inner rounded">
                     <a class="collapse-item" href="utilities-color.html">Revenue</a>
-                    <a class="collapse-item" href="utilities-border.html">Products</a>
+                    <a class="collapse-item" href="{{ route('laptops.statistics') }}">Products</a>
                     <a class="collapse-item" href="{{ route('users.statistics') }}">Staffs</a>
                     <a class="collapse-item" href="utilities-other.html">Other</a>
                 </div>
@@ -35,9 +35,5 @@
         <div class="sidebar-heading">
             Personal
         </div>
-        <li class="nav-item">
-            <a class="nav-link" href="">
-                <i class="fa-solid fa-user"></i>
-                <span>Profile</span></a>
-        </li>
+
 @endif

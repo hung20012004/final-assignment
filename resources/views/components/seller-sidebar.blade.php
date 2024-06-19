@@ -35,9 +35,5 @@
                 </div>
             </div>
         </li>
-        <li class="nav-item">
-            <a class="nav-link" href="">
-                <i class="fa-solid fa-user"></i>
-                <span>Profile</span></a>
-        </li>
+
         @endif
