@@ -1,4 +1,5 @@
 <x-app-layout>
+
     <div class="container-fluid">
         <div class="row mx-lg-5 mx-md-0">
             <x-breadcrumb :links="[
@@ -31,7 +32,7 @@
                             <label for="time">Deadline:</label>
                             <input type="datetime-local" name="time" id="time" class="form-control" required>
                         </div>
-                        <input type="hidden" name="state" value="uncomplete">
+                        <input type="hidden" name="state" value="incomplete">
                         <button type="submit" class="btn btn-primary">Create Task</button>
                     </form>
                 </div>

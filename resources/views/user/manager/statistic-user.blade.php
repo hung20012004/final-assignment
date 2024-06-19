@@ -1,9 +1,15 @@
 <x-app-layout>
-    <div class="container mt-5">
-        <x-breadcrumb :links="[
+    <x-slot name="header">
+        <h2 class="font-weight-bold text-dark">
+            {{ __('Statistics user') }}
+        </h2>
+    </x-slot>
+
+    <x-breadcrumb :links="[
             ['label' => __('Dashboard'), 'url' => route('dashboard')],
             ['label' => __('User Statistics'), 'url' => '']
         ]"/>
+    <div class="container mt-5">
         <!-- Total Users Card -->
         <div class="card mb-4 shadow-sm">
             <div class="card-header bg-primary text-white">

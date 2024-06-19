@@ -32,6 +32,7 @@ Route::middleware([
         Route::get('/export-task', [TaskController::class, 'export'])->name('tasks.export');
         Route::get('/user-statistics', [UserController::class, 'statistics'])->name('users.statistics');
         Route::get('/laptop-statistics', [LaptopController::class, 'statistics'])->name('laptops.statistics');
+        Route::get('/order-statistics', [OrderController::class, 'statistics'])->name('orders.statistics');
     });
     Route::middleware(['accountant'])->group(function () {
     });

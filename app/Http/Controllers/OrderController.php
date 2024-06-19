@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Customer;
@@ -9,7 +10,7 @@ use App\Models\Laptop;
 use App\Models\Order;
 use App\Models\User;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 
 class OrderController extends Controller
 {
@@ -28,14 +29,9 @@ class OrderController extends Controller
     public function create()
     {
         $users = User::where('role', 'seller')->get();
-        $customers = Customer:: all();
-        $laptops = Laptop:: all();
+        $customers = Customer::all();
+        $laptops = Laptop::all();
         return view('user.seller.order.create-order', compact('users', 'customers', 'laptops'));
-
-         // Hoặc nếu vai trò được lưu trong bảng khác và bạn có mối quan hệ
-    // $users = User::whereHas('roles', function($query) {
-    //     $query->where('name', 'seller');
-    // })->get();
     }
 
     /**
@@ -43,7 +39,7 @@ class OrderController extends Controller
      */
     public function store(Request $request)
     {
-             $validatedData = $request->validate([
+        $validatedData = $request->validate([
             'user_name' => 'required|integer', // Assuming user_name is the seller's ID
             'customer_name' => 'required|integer', // Assuming customer_name is the customer's ID
             'state' => 'required|boolean', // Assuming state is a boolean (1 or 0)
@@ -71,9 +67,7 @@ class OrderController extends Controller
             if ($laptop) {
                 $orderDetail->price = $laptop->price * $laptopData['quantity'];
             } else {
-                // Handle case where laptop is not found (though it should exist due to validation)
-                // You can add custom error handling logic here if needed
-                // For simplicity, assuming laptop always exists based on validation
+
                 $orderDetail->price = 0; // Set a default price or handle as needed
             }
 
@@ -99,10 +93,10 @@ class OrderController extends Controller
      */
     public function edit(Order $order)
     {
-         $order = Order::findOrFail($order->id);
-         $customers = Customer::all();
-         $users = User::where('role', 'seller')->get();
-         $laptops = Laptop:: all();
+        $order = Order::findOrFail($order->id);
+        $customers = Customer::all();
+        $users = User::where('role', 'seller')->get();
+        $laptops = Laptop::all();
 
         return view('user.seller.order.edit-order', compact('order', 'users', 'customers', 'laptops'));
     }
@@ -113,7 +107,7 @@ class OrderController extends Controller
     public function update(Request $request, Order $order)
     {
 
-         $validatedData = $request->validate([
+        $validatedData = $request->validate([
             'user_id' => 'nullable|integer', // Assuming user_name is the seller's ID
             'customer_id' => 'nullable|integer', // Assuming customer_name is the customer's ID
             'state' => 'nullable|boolean', // Assuming state is a boolean (1 or 0)
@@ -149,14 +143,6 @@ class OrderController extends Controller
 
             $orderDetail->save(); // Save the order detail
         }
-
-
-        //   $validatedData = $request->validate([
-        // 'user_id' => 'required|integer|exists:users,id',
-        // 'customer_id' => 'required|integer|exists:customers,id',
-        // 'state' => 'required|string|max:255',
-        // ]);
-        // $order->update($validatedData);
         return redirect()->route('orders.index', $order)->with('success', 'Customer information updated successfully!');
 
     }
@@ -166,8 +152,33 @@ class OrderController extends Controller
      */
     public function destroy(Order $order)
     {
-        $order -> delete();
+        $order->delete();
         $order->order_detail()->delete();
         return redirect()->route('orders.index')->with('success', 'Delete successfully');
+    }
+    public function statistics()
+    {
+        // Top-Selling Products
+        $topSellingProducts = Laptop::select('laptops.name', DB::raw('SUM(order_details.quantity) as total_sold'))
+            ->join('order_details', 'laptops.id', '=', 'order_details.laptop_id')
+            ->groupBy('laptops.name')
+            ->orderBy('total_sold', 'desc')
+            ->take(10)
+            ->get();
+
+        // Monthly Sales
+        $monthlySales = Order::select(DB::raw('MONTH(orders.created_at) as month'), DB::raw('SUM(order_details.price * order_details.quantity) as total_sales'))
+            ->join('order_details', 'orders.id', '=', 'order_details.order_id')
+            ->groupBy('month')
+            ->get();
+
+        // Customer Purchase Counts
+        $customerPurchaseCounts = Customer::select('customers.name', DB::raw('COUNT(orders.id) as total_orders'))
+            ->join('orders', 'customers.id', '=', 'orders.customer_id')
+            ->groupBy('customers.name')
+            ->orderBy('total_orders', 'desc')
+            ->get();
+
+        return view('user.manager.statistic-order', compact('topSellingProducts', 'monthlySales', 'customerPurchaseCounts'));
     }
 }

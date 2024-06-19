@@ -24,10 +24,10 @@
             <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities"
                 data-parent="#accordionSidebar">
                 <div class="bg-white py-2 collapse-inner rounded">
-                    <a class="collapse-item" href="utilities-color.html">Revenue</a>
+                    <a class="collapse-item" href="{{ route('orders.statistics') }}">Revenue</a>
                     <a class="collapse-item" href="{{ route('laptops.statistics') }}">Products</a>
                     <a class="collapse-item" href="{{ route('users.statistics') }}">Staffs</a>
-                    <a class="collapse-item" href="utilities-other.html">Other</a>
+                    {{-- <a class="collapse-item" href="utilities-other.html">Other</a> --}}
                 </div>
             </div>
         </li>

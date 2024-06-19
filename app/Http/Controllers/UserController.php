@@ -33,12 +33,13 @@ class UserController extends Controller
 
     public function store(Request $request)
     {
-        // $request->validate([
-        //     'name' => 'required|string|max:255',
-        //     'email' => 'required|email|unique:users,email',
-        //     'role' => 'required|string|in:admin,user',
-        // ]);
-
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'role' => 'required|string|in:seller,warehouse,accountant,customer-service',
+        ], [
+            'email.unique' => 'The email has already been taken.',
+        ]);
         $user = new User();
         $user->name = $request->input('name');
         $user->email = $request->input('email');
@@ -52,7 +53,6 @@ class UserController extends Controller
         catch(\Exception $e){
 
         }
-
         return redirect()->route('users.index')->with('success', 'User created successfully!');
     }
 

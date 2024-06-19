@@ -1,4 +1,5 @@
 <x-app-layout>
+
     <div class="container-fluid">
         <div class="row mx-lg-5 mx-md-0">
             <x-breadcrumb :links="[
@@ -9,6 +10,15 @@
         <div class="row justify-content-center mx-1 px-1">
             <div class="col-md-12 col-lg-11 col-sm-12">
                 <div class="px-4 py-5 bg-white shadow-sm mb-5 rounded">
+                    @if ($errors->any())
+                        <div class="alert alert-danger">
+                            <ul>
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
                     <form action="{{ route('users.store') }}" method="POST">
                         @csrf
                         <div class="mb-3">
