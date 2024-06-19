@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\TaskController;
+use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ManagerController;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
@@ -30,7 +32,8 @@ Route::middleware([
 
     });
     Route::middleware(['seller'])->group(function () {
-
+        Route::resource('customers', CustomerController::class);
+        Route::resource('orders', OrderController::class);
     });
     Route::middleware(['warehouse'])->group(function () {
 
