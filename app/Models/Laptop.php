@@ -15,16 +15,11 @@ class Laptop extends Model
      */
     protected $fillable = [
         'name',
-    ];
-    protected $hidden = [
-    ];
-    /**
-     * The event map for the model.
-     *
-     * @var array<string, class-string>
-     */
-    protected $dispatchesEvents = [
-
+        'category_id',
+        'manufactory_id',
+        'quantity',
+        'price',
+        'status'
     ];
 
     /**
@@ -39,7 +34,13 @@ class Laptop extends Model
         ];
     }
 
-    //  public function order_detail() {
-    //     return $this->belongsTo(Order::class);
-    // }
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
+
+    public function manufactory()
+    {
+        return $this->belongsTo(Manufactory::class);
+    }
 }

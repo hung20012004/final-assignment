@@ -29,13 +29,20 @@
 
         <script src="https://cdn.datatables.net/searchpanes/2.0.2/js/dataTables.searchPanes.min.js"></script>
         <script src="https://cdn.datatables.net/searchpanes/2.0.2/js/searchPanes.bootstrap4.min.js"></script>
+        <style>
+            .sticky-element {
+                position: sticky;
+                top: 0;
+                height: 100%;
+            }
+        </style>
 </head>
 <body id="page-top">
     <x-banner />
     <div id="wrapper" >
         <x-sidebar />
         <div id="content-wrapper" class="d-flex flex-column">
-            <div id="content mx-0">
+            <div id="content">
                 <x-navigation-menu/>
                 <main class="">
                     {{ $slot }}

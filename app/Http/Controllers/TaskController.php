@@ -22,9 +22,7 @@ class TaskController extends Controller
                     $q->where('name', 'like', "%{$search}%");
                 });
         }
-
-        $tasks = $query->paginate(10);
-
+        $tasks = $query->get();
         return view('user.manager.index-task', compact('tasks'));
     }
 

@@ -7,8 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Manufactory extends Model
 {
-      use HasFactory;
-    /**
+    use HasFactory;
+     /**
      * The attributes that are mass assignable.
      *
      * @var array<int, string>
@@ -16,17 +16,6 @@ class Manufactory extends Model
     protected $fillable = [
         'name',
         'description',
-    ];
-    protected $hidden = [
-        'phone',
-    ];
-    /**
-     * The event map for the model.
-     *
-     * @var array<string, class-string>
-     */
-    protected $dispatchesEvents = [
-
     ];
 
     /**

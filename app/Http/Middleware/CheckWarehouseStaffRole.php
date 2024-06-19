@@ -18,7 +18,7 @@ class CheckWarehouseStaffRole
     {
         $user = Auth::user();
 
-        if (!$user || $user->role !== 'warehouse-staff') {
+        if (!$user || $user->role !== 'warehouse') {
             abort(403, 'Unauthorized');
         }
 
