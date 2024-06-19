@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Laptop extends Model
 {
-    use HasFactory;
+      use HasFactory;
     /**
      * The attributes that are mass assignable.
      *
@@ -15,6 +15,15 @@ class Laptop extends Model
      */
     protected $fillable = [
         'name',
+    ];
+    protected $hidden = [
+    ];
+    /**
+     * The event map for the model.
+     *
+     * @var array<string, class-string>
+     */
+    protected $dispatchesEvents = [
 
     ];
 
@@ -29,4 +38,8 @@ class Laptop extends Model
 
         ];
     }
+
+    //  public function order_detail() {
+    //     return $this->belongsTo(Order::class);
+    // }
 }

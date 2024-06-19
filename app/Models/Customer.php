@@ -30,6 +30,9 @@ class Customer extends Model
         // 'created' => CustomerCreated::class,
         // 'updated' => CustomerUpdated::class,
         // 'deleted' => CustomerDeleted::class,
+        // 'created' => CustomerCreated::class,
+        // 'updated' => CustomerUpdated::class,
+        // 'deleted' => CustomerDeleted::class,
     ];
 
     /**

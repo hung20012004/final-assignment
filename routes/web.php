@@ -3,13 +3,15 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\TaskController;
+use App\Http\Controllers\ManagerController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\OrderController;
-use App\Http\Controllers\ManagerController;
+use App\Http\Controllers\OrderDetailController;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Http\Controllers\LaptopController;
 use App\Http\Middleware\CheckLaptop;
+use App\Models\Customer;
 
 Route::get('/', function () {
     return view('welcome');
@@ -29,7 +31,6 @@ Route::middleware([
         Route::get('/export', [TaskController::class, 'export'])->name('tasks.export');
     });
     Route::middleware(['accountant'])->group(function () {
-
     });
     Route::middleware(['seller'])->group(function () {
         Route::resource('customers', CustomerController::class);
