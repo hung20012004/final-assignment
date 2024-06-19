@@ -23,8 +23,10 @@ Route::middleware([
     })->name('dashboard');
     Route::middleware(['manager'])->group(function () {
         Route::resource('users', UserController::class);
+        Route::get('/export-user', [UserController::class, 'export'])->name('users.export');
+        Route::get('/user-statistics', [UserController::class, 'statistics'])->name('users.statistics');
         Route::resource('tasks', TaskController::class);
-        Route::get('/export', [TaskController::class, 'export'])->name('tasks.export');
+        Route::get('/export-task', [TaskController::class, 'export'])->name('tasks.export');
     });
     Route::middleware(['accountant'])->group(function () {
 

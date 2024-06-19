@@ -9,6 +9,7 @@ export default defineConfig({
                 'resources/js/app.js',
                 'resources/css/sb-admin-2.min.css',
                 'resources/js/sb-admin-2.min.js',
+                'resources/css/profile.css',
             ],
             refresh: true,
         }),
