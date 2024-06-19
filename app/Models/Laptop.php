@@ -15,7 +15,11 @@ class Laptop extends Model
      */
     protected $fillable = [
         'name',
-
+        'category_id',
+        'manufactory_id',
+        'quantity',
+        'price',
+        'status'
     ];
 
     /**
@@ -28,5 +32,15 @@ class Laptop extends Model
         return [
 
         ];
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
+
+    public function manufactory()
+    {
+        return $this->belongsTo(Manufactory::class);
     }
 }
