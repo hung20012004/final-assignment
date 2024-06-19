@@ -57,6 +57,9 @@
                                 <div style="color: red;">{{ $message }}</div>
                             @enderror
                         </div>
+                         <div class="remove-button-container" style="margin-left: 1025px;">
+                            <button type="button" class="btn btn-outline-danger" onclick="removeLaptop({{ $index }})">Remove</button>
+                        </div>
                     </div>
                     @php $total += $orderDetail->quantity * $orderDetail->laptop->price; @endphp
                 @endforeach
@@ -81,11 +84,11 @@
                 <input type="hidden" id="initialTotal" value="{{ $total }}">
                 <input type="hidden" id="hiddenTotal" name="hiddenTotal" value="{{ $total }}">
             </div>
-        </form>
         <div class="form-inline" style="margin-left: 865px; margin-bottom: 10px">
             <div style="padding-top: 5px"><button type="button" class="btn btn-success" onclick="addLaptop()">Add Another Laptop</button></div>
             <div style="padding-top: 5px; padding-left: 10px"><button type="submit" class="btn btn-primary">Save</button></div>
         </div>
+        </form>
     </div>
 </x-app-layout>
 
@@ -116,13 +119,14 @@ function addLaptop() {
                 <strong><label for="quantity" style="color: #04AA6D;">Quantity:</label></strong>
                 <input type="number" name="laptops[${newIndex}][quantity]" class="form-control quantity-input" value="" oninput="updateTotalPrice()">
             </div>
-            <div style="margin-left: 1025px;">
+            <div class="remove-button-container" style="margin-left: 1025px;">
                 <button type="button" class="btn btn-outline-danger" onclick="removeLaptop(${newIndex})">Remove</button>
             </div>
         </div>
     `;
 
     laptopContainer.appendChild(newLaptopItem);
+    updateRemoveButtons();
     updateTotalPrice();
 }
 
@@ -132,6 +136,7 @@ function removeLaptop(index) {
 
     if (laptopItem) {
         laptopContainer.removeChild(laptopItem);
+        updateRemoveButtons();
         updateTotalPrice();
     }
 }
@@ -157,7 +162,17 @@ function formatCurrency(amount) {
     return amount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
 }
 
+function updateRemoveButtons() {
+    const removeButtons = document.querySelectorAll('.remove-button-container');
+    if (removeButtons.length === 1) {
+        removeButtons[0].style.display = 'none';
+    } else {
+        removeButtons.forEach(button => button.style.display = 'block');
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
+    updateRemoveButtons();
     updateTotalPrice();
 });
 </script>

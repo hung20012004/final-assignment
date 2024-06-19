@@ -34,6 +34,7 @@ Route::middleware([
     Route::middleware(['seller'])->group(function () {
         Route::resource('customers', CustomerController::class);
         Route::resource('orders', OrderController::class);
+        Route::get('/exportCustomer', [CustomerController::class, 'export'])->name('customers.export');
     });
     Route::middleware(['warehouse'])->group(function () {
 

@@ -4,18 +4,30 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Customer;
+use App\Models\Task;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
+use App\Exports\CustomersExport;
+use Maatwebsite\Excel\Facades\Excel;
+
 
 class CustomerController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $customers = Customer::all();
+        $query = Customer::query();  // tạo 1 câu quenry select * mà chưa có đk
+        if($searchName = $request->input('searchName'))
+        {
+            $query->where('name', 'like', "%$searchName%");
+        }
+    //     if ($searchAddress = $request->input('searchAddress')) {
+    //     $query->where('address', 'like', "%$searchAddress%");  // Điều kiện tìm kiếm theo địa chỉ
+    // }
+         $customers = $query->get();
         return view('user.seller.customer.index-customer', compact('customers'));
     }
 
@@ -87,6 +99,10 @@ class CustomerController extends Controller
             'address' => 'nullable|string|max:255',
         ]);
         
+//         Customer::where('id', $id)->update([
+//     'name' => 'John Doe',
+//     'email' => 'john.doe@example.com',
+// ]);
         $customer->update($validatedData);
         return redirect()->route('customers.index', $customer)->with('success', 'Customer information updated successfully!');
     }
@@ -101,5 +117,10 @@ class CustomerController extends Controller
 
          // Chuyển hướng người dùng đến trang danh sách người dùng
          return redirect()->route('customers.index')->with('success', 'User deleted successfully!');
+    }
+
+    public function export()
+    {
+        return Excel::download(new CustomersExport, 'customers.xlsx');
     }
 }

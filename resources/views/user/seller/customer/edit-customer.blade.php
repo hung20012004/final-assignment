@@ -2,6 +2,7 @@
     <div class="container">
         <h1>Edit Customer</h1>
         <form action="{{ route('customers.update', $customer) }}" method="POST">
+            @method('PUT')
             @csrf
              <div class="form-group">
                 <label for="name">ID:</label>
