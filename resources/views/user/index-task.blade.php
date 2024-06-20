@@ -1,24 +1,17 @@
 <x-app-layout>
-
     <div class="container">
         <div class="row mt-3">
             <div class="col">
                 <x-breadcrumb :links="[
-                    ['url' => route('users.index'), 'label' => 'Users'],
+                    ['url' => route('usertasks.index'), 'label' => 'Tasks']
                 ]" />
             </div>
         </div>
         <div class="row justify-content-center mt-4">
             <div class="col-md-12">
                 <div class="card">
-                    <div class="card-header">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <h5 class="card-title mb-0">User Management</h5>
-                            <div>
-                                <a href="{{ route('users.create') }}" class="btn btn-primary">New</a>
-                                <a href="{{ route('users.export') }}" class="btn btn-success">Excel</a>
-                            </div>
-                        </div>
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0">My Tasks</h5>
                     </div>
                     <div class="card-body">
                         @if (session('success'))
@@ -26,7 +19,7 @@
                                 {{ session('success') }}
                             </div>
                         @endif
-                        <form action="{{ route('users.index') }}" method="GET" class="mb-3">
+                        <form action="{{ route('usertasks.index') }}" method="GET" class="mb-3">
                             <div class="input-group">
                                 <input type="search" name="search" class="form-control" placeholder="Search..." aria-label="Search">
                                 <div class="input-group-append">
@@ -35,29 +28,29 @@
                             </div>
                         </form>
                         <div class="table-responsive">
-                            <table id="users-table" class="table table-bordered mt-3">
+                            <table id="dataid" class="table table-bordered mt-3">
                                 <thead class="bg-light text-black text-center">
                                     <tr>
                                         <th>ID</th>
                                         <th>Name</th>
-                                        <th>Email</th>
+                                        <th>Description</th>
+                                        <th>Created At</th>
+                                        <th>Deadline</th>
+                                        <th>Status</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($users as $user)
+                                    @foreach ($tasks as $task)
                                         <tr>
-                                            <td class="text-center">{{ $user->id }}</td>
-                                            <td>{{ $user->name }}</td>
-                                            <td>{{ $user->email }}</td>
+                                            <td class="text-center">{{ $task->id }}</td>
+                                            <td>{{ $task->name }}</td>
+                                            <td>{{ $task->description }}</td>
+                                            <td>{{ \Carbon\Carbon::parse($task->created_at)->format('H:i d/m/Y') }}</td>
+                                            <td>{{ \Carbon\Carbon::parse($task->time)->format('H:i d/m/Y') }}</td>
+                                            <td class="text-center">{{ ucfirst($task->state) }}</td>
                                             <td class="d-flex justify-content-center">
-                                                <a href="{{ route('users.show', $user) }}" class="btn btn-info btn-sm mx-2">View</a>
-                                                <a href="{{ route('users.edit', $user) }}" class="btn btn-warning btn-sm mx-2">Edit</a>
-                                                <form action="{{ route('users.destroy', $user) }}" method="POST" style="display: inline-block;">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="btn btn-danger btn-sm mx-2">Delete</button>
-                                                </form>
+                                                <a href="{{ route('usertasks.edit', $task->id) }}" class="btn btn-primary btn-sm mx-2">Edit</a>
                                             </td>
                                         </tr>
                                     @endforeach
@@ -72,7 +65,7 @@
     <!-- Initialize DataTables -->
     <script>
         $(document).ready(function() {
-            $('#users-table').DataTable({
+            $('#dataid').DataTable({
                 dom: 'rtip',
                 // Add additional DataTables configuration options if needed
             });

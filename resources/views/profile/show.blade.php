@@ -1,5 +1,4 @@
 <x-app-layout>
-    <!-- Include the compiled CSS file for this specific component -->
     @vite('resources/css/profile.css')
 
     <x-slot name="header">

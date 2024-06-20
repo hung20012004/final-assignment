@@ -29,4 +29,8 @@ class Manufactory extends Model
 
         ];
     }
+    public function laptops()
+    {
+        return $this->hasMany(Laptop::class);
+    }
 }

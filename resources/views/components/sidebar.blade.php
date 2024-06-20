@@ -25,6 +25,22 @@
         <x-accountant-sidebar/>
         <x-customer-service-sidebar/>
         <x-warehouse-staff-sidebar/>
+        <hr class="sidebar-divider d-none d-md-block">
+        <div class="sidebar-heading">
+            Personal
+        </div>
+        @if(Auth::user()->role!='manager')
+        <li class="nav-item">
+            <a class="nav-link" href="{{ route('usertasks.index') }}">
+                <i class="fa-solid fa-list-check"></i>
+                <span>Tasks</span></a>
+        </li>
+        @endif
+        <li class="nav-item">
+            <a class="nav-link" href="{{ route('profile.show') }}">
+                <i class="fa-solid fa-user"></i>
+                <span>Profile</span></a>
+        </li>
 
     <hr class="sidebar-divider d-none d-md-block">
     <div class="text-center d-none d-md-inline">

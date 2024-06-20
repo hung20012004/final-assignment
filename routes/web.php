@@ -4,15 +4,11 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\TaskController;
-use App\Http\Controllers\ManagerController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\OrderController;
-use App\Http\Controllers\OrderDetailController;
-use Illuminate\Support\Facades\Auth;
-use App\Models\User;
 use App\Http\Controllers\LaptopController;
-use App\Http\Middleware\CheckLaptop;
-use App\Models\Customer;
+use App\Http\Controllers\UserTaskController;
+use App\Http\Controllers\DashboardController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -23,15 +19,15 @@ Route::middleware([
     'verified',
     'role',
 ])->group(function () {
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::middleware(['manager'])->group(function () {
         Route::resource('users', UserController::class);
         Route::get('/export-user', [UserController::class, 'export'])->name('users.export');
-        Route::get('/user-statistics', [UserController::class, 'statistics'])->name('users.statistics');
         Route::resource('tasks', TaskController::class);
         Route::get('/export-task', [TaskController::class, 'export'])->name('tasks.export');
+        Route::get('/user-statistics', [UserController::class, 'statistics'])->name('users.statistics');
+        Route::get('/laptop-statistics', [LaptopController::class, 'statistics'])->name('laptops.statistics');
+        Route::get('/order-statistics', [OrderController::class, 'statistics'])->name('orders.statistics');
     });
     Route::middleware(['accountant'])->group(function () {
     });
@@ -45,10 +41,12 @@ Route::middleware([
     });
     Route::middleware(['warehouse'])->group(function () {
         Route::resource('laptops', LaptopController::class);
+
     });
     Route::middleware(['customer-service'])->group(function () {
 
     });
-
-
+    Route::get('/usertasks', [UserTaskController::class, 'index'])->name('usertasks.index');
+    Route::get('/usertasks/{task}/edit', [UserTaskController::class, 'edit'])->name('usertasks.edit');
+    Route::put('/usertasks/{task}', [UserTaskController::class, 'update'])->name('usertasks.update');
 });
