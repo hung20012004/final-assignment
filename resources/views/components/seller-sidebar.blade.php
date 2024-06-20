@@ -13,9 +13,9 @@
                 <span>Orders</span></a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="tables.html">
+            <a class="nav-link" href="{{ route ('blogs.index') }}">
                 <i class="fa-solid fa-money-bill-transfer"></i>
-                <span>Settlement</span></a>
+                <span>Blogs</span></a>
         </li>
         <hr class="sidebar-divider d-none d-md-block">
         <div class="sidebar-heading">

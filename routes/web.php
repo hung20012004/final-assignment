@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\BlogController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\ManagerController;
 use App\Http\Controllers\CustomerController;
@@ -37,7 +38,10 @@ Route::middleware([
     Route::middleware(['seller'])->group(function () {
         Route::resource('customers', CustomerController::class);
         Route::resource('orders', OrderController::class);
+        Route::resource('blogs', BlogController::class);
         Route::get('/exportCustomer', [CustomerController::class, 'export'])->name('customers.export');
+        Route::get('/exportOrder', [OrderController::class, 'export'])->name('orders.export');
+        Route::get('/exportBlog', [BlogController::class, 'export'])->name('blogs.export');
     });
     Route::middleware(['warehouse'])->group(function () {
         Route::resource('laptops', LaptopController::class);

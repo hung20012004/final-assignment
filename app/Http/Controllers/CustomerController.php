@@ -10,8 +10,6 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
 use App\Exports\CustomersExport;
 use Maatwebsite\Excel\Facades\Excel;
-
-
 class CustomerController extends Controller
 {
     /**
@@ -119,8 +117,9 @@ class CustomerController extends Controller
          return redirect()->route('customers.index')->with('success', 'User deleted successfully!');
     }
 
+    
     public function export()
     {
-        return Excel::download(new CustomersExport, 'customers.xlsx');
+        return Excel::download(new CustomersExport(), 'customers.xlsx');
     }
 }

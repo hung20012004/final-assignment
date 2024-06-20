@@ -5,12 +5,14 @@
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <div>
                     <a href="{{ route('orders.create') }}" class="btn btn-primary">New</a>
-                    <a href="{{ route('tasks.export') }}" class="btn btn-success">Excel</a>
+                    <a href="{{ route('orders.export') }}" class="btn btn-success">Excel</a>
                 </div>
-                <form action="{{ route('tasks.index') }}" method="GET" class="form-inline">
-                    <input class="form-control mr-sm-2" type="search" name="search" placeholder="Search" aria-label="Search">
+                <form action="{{ route('orders.index') }}" method="GET" class="form-inline">
+                    <input class="form-control mr-sm-2" type="searchSeller" name="searchSeller" placeholder="Search Seller" aria-label="Search">
+                    <input class="form-control mr-sm-2" type="searchCustomer" name="searchCustomer" placeholder="Search  Customer" aria-label="Search">
                     <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
                 </form>
+        
             </div>
         @if (session('success'))
             <div class="alert alert-success mt-2">
@@ -27,7 +29,7 @@
                     <th>Customer Name</th>
                     <th>Order Time</th>
                     <th>State</th>
-                    <th></th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>

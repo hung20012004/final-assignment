@@ -10,16 +10,33 @@ use App\Models\Order;
 use App\Models\User;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
+use App\Exports\OrdersExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class OrderController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $orders = Order::with(['user', 'customer', 'order_detail.laptop'])->get();
-        return view('user.seller.order.index-order', compact('orders'));
+        $query = Order::query();    
+        if($searchSeller = $request->input('searchSeller'))
+        {
+            $query->whereHas('user',function($q) use ($searchSeller){
+                $q->where('name', 'like', "%$searchSeller%");
+            });
+        }
+
+        if($searchCustomer = $request->input('searchCustomer'))
+        {
+            $query->whereHas('customer',function($q) use ($searchCustomer){
+                $q->where('name', 'like', "%$searchCustomer%");
+            });
+        }
+        $orders = $query->get();
+        // $orders = Order::with(['user', 'customer', 'order_detail.laptop'])->get();
+        return view('user.seller.order.index-order', compact( 'orders'));
     }
 
     /**
@@ -169,5 +186,10 @@ class OrderController extends Controller
         $order -> delete();
         $order->order_detail()->delete();
         return redirect()->route('orders.index')->with('success', 'Delete successfully');
+    }
+
+    public function export()
+    {
+        return Excel::download(new OrdersExport(), 'Orders.xlsx');
     }
 }

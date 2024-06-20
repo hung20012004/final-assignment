@@ -29,23 +29,23 @@
             </div>
             <div id="laptop-container">
                 <div class="form-group laptop-item">
+                    @php
+                        $index = 0;
+                    @endphp
                     <label for="laptop_name">Laptop:</label>
-                    <select name="laptops[0][laptop_id]" class="form-control laptop-select" onchange="updateTotalPrice()" >
+                    <select name="laptops[{{ $index }}][laptop_id]" class="form-control laptop-select" onchange="updateTotalPrice()" >
                         <option value="">--- Chọn laptop ---</option>
                         @foreach ($laptops as $laptop)
-                            <option value="{{ $laptop->id }}" data-price="{{ $laptop->price }}" {{ old('laptops.0.laptop_id') == $laptop->id ? 'selected' : '' }}>{{ $laptop->name }}</option>
+                            <option value="{{ $laptop->id }}" data-price="{{ $laptop->price }}" {{ old('laptops.'.$index.'.laptop_id') == $laptop->id ? 'selected' : '' }}>{{ $laptop->name }}</option>
                         @endforeach
                     </select>
-                    @error('laptops.0.laptop_id')
+                    @error('laptops.{{ $index }}.laptop_id')
                          <div style="color: red;">{{ $message }}</div>
                      @enderror
-                      <div style="padding-top: 5px">
-                       <button type="button" class="btn btn-secondary" onclick="addLaptop()">Add Another Laptop</button>
-                     </div>
                      <div>
                     <label for="quantity">Quantity:</label>
-                   <input type="number" name="laptops[0][quantity]" class="form-control quantity-input" value="{{ old('laptops.0.quantity') }}" oninput="updateTotalPrice()">
-                       @error('laptops.0.quantity')
+                   <input type="number" name="laptops[{{ $index }}][quantity]" class="form-control quantity-input" value="{{ old('laptops.'.$index.'.quantity') }}" oninput="updateTotalPrice()">
+                       @error('laptops.{{ $index }}.quantity')
                             <div style="color: red;">{{ $message }}</div>
                         @enderror
                     </div>
@@ -67,7 +67,10 @@
                 <label for="total">Total:</label>
                 <label id="total" name="total" class="form-control"></label>
             </div>
-            <button type="submit" class="btn btn-primary">Create</button>
+            <div style="padding-top: 5px" class="form-row">
+                <button type="button" class="btn btn-secondary" onclick="addLaptop()">Add Another Laptop</button>
+                 <button type="submit" class="btn btn-primary">Create</button>
+            </div>
         </form>
     </div>
 </x-app-layout>
@@ -75,30 +78,58 @@
 
 <script>
 function addLaptop() {
-    var laptopContainer = document.getElementById('laptop-container');
-    var laptopItems = document.querySelectorAll('.laptop-item');
-    var lastItemIndex = laptopItems.length - 1;
-    var lastItem = laptopItems[lastItemIndex];
-    var newIndex = parseInt(lastItem.getAttribute('data-index')) + 1;
+    const laptopContainer = document.getElementById('laptop-container');
+    const laptopItems = document.querySelectorAll('.laptop-item');
+    const newIndex = laptopItems.length;
 
-    var newLaptopItem = lastItem.cloneNode(true);
+    const newLaptopItem = document.createElement('div');
+    newLaptopItem.classList.add('form-group', 'laptop-item');
     newLaptopItem.setAttribute('data-index', newIndex);
 
-    var selects = newLaptopItem.querySelectorAll('select');
-    selects.forEach(function(select) {
-        select.name = select.name.replace(/\[\d\]/, '[' + newIndex + ']');
-    });
-
-    var inputs = newLaptopItem.querySelectorAll('input');
-    inputs.forEach(function(input) {
-        input.name = input.name.replace(/\[\d\]/, '[' + newIndex + ']');
-        input.value = '';
-    });
+    newLaptopItem.innerHTML = `
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <strong><label for="laptop_name" style="color: #04AA6D;">Laptop:</label></strong>
+                <select name="laptops[${newIndex}][laptop_id]" class="form-control laptop-select" onchange="updateTotalPrice()">
+                    <option></option>
+                    @foreach ($laptops as $laptop)
+                        <option value="{{ $laptop->id }}" data-price="{{ $laptop->price }}">{{ $laptop->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="form-group col-md-6">
+                <strong><label for="quantity" style="color: #04AA6D;">Quantity:</label></strong>
+                <input type="number" name="laptops[${newIndex}][quantity]" class="form-control quantity-input" value="" oninput="updateTotalPrice()">
+            </div>
+            <div class="remove-button-container" style="margin-left: 1025px;">
+                <button type="button" class="btn btn-outline-danger" onclick="removeLaptop(${newIndex})">Remove</button>
+            </div>
+        </div>
+    `;
 
     laptopContainer.appendChild(newLaptopItem);
-    // var laptopContainer = document.getElementById('laptop-container');
-    // var newLaptopItem = document.querySelector('.laptop-item').cloneNode(true);
-    // laptopContainer.appendChild(newLaptopItem);
+    updateRemoveButtons();
+    updateTotalPrice();
+}
+
+function removeLaptop(index) {
+    const laptopContainer = document.getElementById('laptop-container');
+    const laptopItem = document.querySelector(`.laptop-item[data-index="${index}"]`);
+
+    if (laptopItem) {
+        laptopContainer.removeChild(laptopItem);
+        updateRemoveButtons();
+        updateTotalPrice();
+    }
+}
+
+function updateRemoveButtons() {
+    const removeButtons = document.querySelectorAll('.remove-button-container');
+    if (removeButtons.length === 1) {
+        removeButtons[0].style.display = 'none';
+    } else {
+        removeButtons.forEach(button => button.style.display = 'block');
+    }
 }
 
 function updateTotalPrice() {
@@ -120,7 +151,5 @@ function updateTotalPrice() {
 function formatCurrency(amount) {
     return amount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
 }
-
-
 </script>
 
