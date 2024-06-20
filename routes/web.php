@@ -7,6 +7,7 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\LaptopController;
 use App\Http\Controllers\UserTaskController;
+use App\Http\Controllers\DashboardController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -17,9 +18,7 @@ Route::middleware([
     'verified',
     'role',
 ])->group(function () {
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::middleware(['manager'])->group(function () {
         Route::resource('users', UserController::class);
         Route::get('/export-user', [UserController::class, 'export'])->name('users.export');
