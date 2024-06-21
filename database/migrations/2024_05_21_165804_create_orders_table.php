@@ -33,8 +33,7 @@ return new class extends Migration
                   ->constrained()
                   ->cascadeOnDelete();
             $table->integer('quantity');
-            $table->decimal('price');
-            $table->timestamps();
+            $table->decimal('price',15,2);
             $table->timestamps();
         });
     }
@@ -44,7 +43,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        // Schema::dropIfExists('orders');
+        Schema::dropIfExists('orders');
         Schema::dropIfExists('order_details');
     }
 };

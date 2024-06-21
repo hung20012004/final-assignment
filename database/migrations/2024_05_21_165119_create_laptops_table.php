@@ -15,10 +15,11 @@ return new class extends Migration
             $table->id();
             $table->string('name')
                   ->unique();
-            $table->string('descripton')
+            $table->string('description')
                   ->nullable();
             $table->timestamp('started_at')
                   ->nullable();
+            $table->timestamps();
         });
         Schema::create('categories', function (Blueprint $table) {
             $table->id();
@@ -26,6 +27,7 @@ return new class extends Migration
                   ->unique();
             $table->string('description')
                   ->nullable();
+            $table->timestamps();
         });
         Schema::create('laptops', function (Blueprint $table) {
             $table->id();
