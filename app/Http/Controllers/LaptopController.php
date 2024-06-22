@@ -1,19 +1,18 @@
 <?php
 
 namespace App\Http\Controllers;
+
+use App\Exports\LaptopsExport;
 use app\Models\User;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Laptop;
 use App\Models\Manufactory;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class LaptopController extends Controller
 {
-    public function __construct(Request $request)
-    {
-
-    }
     /**
     * Display a listing of the resource.
     */
@@ -32,8 +31,8 @@ class LaptopController extends Controller
         }
 
         $laptops = $query->paginate(10);
-        $laptops = Laptop::all();
-        return view('user.warehouse.index-laptop', compact('laptops'));
+
+        return view('user.warehouse.laptop.index-laptop', compact('laptops'));
     }
     /**
     * Show the form for creating a new resource.
@@ -43,9 +42,12 @@ class LaptopController extends Controller
         $manufactories = Manufactory::all();
         $categories = Category::all();
 
-        return view('user.warehouse.create-laptop', compact('manufactories', 'categories'));
+        return view('user.warehouse.laptop.create-laptop', compact('manufactories', 'categories'));
     }
 
+     /**
+     * Store a newly created resource in storage.
+     */
     public function store(Request $request)
     {
         $validatedData = $request->validate([
@@ -76,7 +78,7 @@ class LaptopController extends Controller
     {
         $laptop = Laptop::findOrFail($laptop->id);
 
-        return view('user.warehouse.show-laptop', compact('laptop'));
+        return view('user.warehouse.laptop.show-laptop', compact('laptop'));
     }
 
     /**
@@ -88,7 +90,7 @@ class LaptopController extends Controller
         $manufactories = Manufactory::all();
         $categories = Category::all();
 
-        return view('user.warehouse.edit-laptop', compact('laptop','manufactories', 'categories'));
+        return view('user.warehouse.laptop.edit-laptop', compact('laptop','manufactories', 'categories'));
     }
 
     /**
@@ -124,5 +126,9 @@ class LaptopController extends Controller
         $laptopsByManufactory = Manufactory::withCount('laptops')->get();
 
         return view('user.manager.statistic-laptop', compact('laptopsByCategory', 'laptopsByManufactory'));
+    }
+    public function export()
+    {
+        return Excel::download(new LaptopsExport, 'laptops.xlsx');
     }
 }

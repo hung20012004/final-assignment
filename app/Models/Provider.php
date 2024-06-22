@@ -15,6 +15,8 @@ class Provider extends Model
      */
     protected $fillable = [
         'name',
+        'address',
+        'phone',
         'email',
     ];
     protected $hidden = [

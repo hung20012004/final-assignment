@@ -13,6 +13,8 @@ return new class extends Migration
     {
         Schema::create('invoices', function (Blueprint $table) {
             $table->id();
+            $table->string('invoice_code')
+                  ->unique();
             $table->foreignId('user_id')
                   ->constrained();
             $table->foreignId('provider_id')
@@ -20,14 +22,17 @@ return new class extends Migration
             $table->integer('state');
             $table->timestamps();
         });
-        Schema::create('invoice_detail', function (Blueprint $table) {
+        Schema::create('invoice_details', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('laptop_id');
+            $table->foreignId('laptop_id')
+                ->constrained()
+                ->cascadeOnDelete();
             $table->foreignId('invoice_id')
                   ->constrained()
                   ->cascadeOnDelete();
             $table->integer('quantity');
-            $table->decimal('price');
+            $table->decimal('price',15,2);
+            $table->timestamps();
         });
     }
 
