@@ -13,10 +13,17 @@ class InvoiceDetail extends Model
      *
      * @var array<int, string>
      */
-    protected $fillable = [
-        'quantity',
-        'price',
-    ];
+    protected $fillable = ['invoice_id', 'laptop_id', 'quantity', 'price'];
+
+    public function invoice()
+    {
+        return $this->belongsTo(Invoice::class);
+    }
+
+    public function laptop()
+    {
+        return $this->belongsTo(Laptop::class);
+    }
     protected $hidden = [
     ];
     /**

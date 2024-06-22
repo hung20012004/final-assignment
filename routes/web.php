@@ -1,11 +1,17 @@
 <?php
 
+use App\Http\Controllers\CategoryController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\LaptopController;
+use App\Http\Controllers\ManufactoryController;
+use App\Http\Controllers\ProviderController;
+use App\Http\Middleware\CheckLaptop;
+use App\Models\Customer;
 use App\Http\Controllers\UserTaskController;
 use App\Http\Controllers\DashboardController;
 
@@ -37,7 +43,13 @@ Route::middleware([
     });
     Route::middleware(['warehouse'])->group(function () {
         Route::resource('laptops', LaptopController::class);
-
+        Route::get('/export-laptop', [LaptopController::class, 'export'])->name('laptops.export');
+        Route::resource('providers', ProviderController::class);
+        Route::get('/export-provider', [ProviderController::class, 'export'])->name('providers.export');
+        Route::resource('invoices', InvoiceController::class);
+        Route::get('/export-invoice', [InvoiceController::class, 'export'])->name('invoices.export');
+        Route::resource('manufactories', ManufactoryController::class);
+        Route::resource('categories', CategoryController::class);
     });
     Route::middleware(['customer-service'])->group(function () {
 
