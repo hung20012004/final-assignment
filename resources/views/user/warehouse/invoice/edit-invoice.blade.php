@@ -82,7 +82,7 @@
                                 <input type="hidden" id="hiddenTotal" name="hiddenTotal" value="{{ $total }}">
                             </div>
                             <div class="card-footer d-flex justify-content-between">
-                                <a href="{{ route('laptops.index') }}" class="btn btn-secondary">Back</a>
+                                <a href="{{ route('invoices.index') }}" class="btn btn-secondary">Back</a>
                                 <button type="button" class="btn btn-success" onclick="addInvoiceDetail()">Add Another Laptop</button>
                                 <button type="submit" class="btn btn-primary">Save</button>
                             </div>
