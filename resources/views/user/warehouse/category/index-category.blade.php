@@ -3,7 +3,7 @@
         <div class="row mt-3">
             <div class="col">
                 <x-breadcrumb :links="[
-                    ['url' => route('tasks.index'), 'label' => 'Tasks'],
+                    ['url' => route('categories.index'), 'label' => 'Categories'],
                 ]" />
             </div>
         </div>
@@ -12,10 +12,9 @@
                 <div class="card">
                     <div class="card-header">
                         <div class="d-flex justify-content-between align-items-center">
-                            <h5 class="card-title mb-0">Task Management</h5>
+                            <h5 class="card-title mb-0">Category Management</h5>
                             <div>
-                                <a href="{{ route('tasks.create') }}" class="btn btn-primary">New</a>
-                                <a href="{{ route('tasks.export') }}" class="btn btn-success">Excel</a>
+                                <a href="{{ route('categories.create') }}" class="btn btn-primary">New</a>
                             </div>
                         </div>
                     </div>
@@ -25,9 +24,9 @@
                                 {{ session('success') }}
                             </div>
                         @endif
-                        <form action="{{ route('tasks.index') }}" method="GET" class="mb-3">
+                        <form action="{{ route('categories.index') }}" method="GET" class="mb-3">
                             <div class="input-group">
-                                <input type="search" name="search" class="form-control" placeholder="Search..." aria-label="Search" value="{{ request('search') }}">
+                                <input type="search" name="search" class="form-control" placeholder="Search..." aria-label="Search">
                                 <div class="input-group-append">
                                     <button class="btn btn-outline-success" type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
                                 </div>
@@ -39,29 +38,27 @@
                                     <tr>
                                         <th>ID</th>
                                         <th>Name</th>
-                                        <th>Assigned Staff</th>
+                                        <th>Description</th>
                                         <th>Created At</th>
-                                        <th>Deadline</th>
-                                        <th>Status</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($tasks as $task)
+                                    @foreach ($categories as $category)
                                         <tr>
-                                            <td class="text-center">{{ $task->id }}</td>
-                                            <td>{{ $task->name }}</td>
-                                            <td>{{ $task->user->name }}</td>
-                                            <td>{{ \Carbon\Carbon::parse($task->created_at)->format('H:i d/m/Y') }}</td>
-                                            <td>{{ \Carbon\Carbon::parse($task->time)->format('H:i d/m/Y') }}</td>
-                                            <td class="text-center">{{ ucfirst($task->state) }}</td>
+                                            <td>{{ $category->id }}</td>
+                                            <td>{{ $category->name }}</td>
+                                            <td>{{ $category->description }}</td>
+                                            <td>{{ $category->created_at }}</td>
                                             <td class="d-flex justify-content-center">
-                                                <a href="{{ route('tasks.show', $task) }}" class="btn btn-info btn-sm mx-2">View</a>
-                                                <a href="{{ route('tasks.edit', $task) }}" class="btn btn-warning btn-sm mx-2">Edit</a>
-                                                <form action="{{ route('tasks.destroy', $task) }}" method="POST" style="display: inline-block;" onsubmit="return confirmDelete();">
+                                                <a href="{{ route('categories.edit', $category) }}" class="btn btn-warning btn-sm mx-2">Edit</a>
+                                                <!-- Xóa với popup xác nhận -->
+                                                <button type="button" class="btn btn-danger btn-sm" onclick="confirmDelete('{{ $category->id }}', '{{ $category->name }}')">Delete</button>
+                                                
+                                                <!-- Form xóa -->
+                                                <form id="delete-form-{{ $category->id }}" action="{{ route('categories.destroy', $category) }}" method="POST" style="display: none;">
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="submit" class="btn btn-danger btn-sm mx-2">Delete</button>
                                                 </form>
                                             </td>
                                         </tr>
@@ -82,9 +79,12 @@
                 // Add additional DataTables configuration options if needed
             });
         });
-
-        function confirmDelete() {
-            return confirm('Are you sure you want to delete this task?');
+        // Function xác nhận xóa
+        function confirmDelete(id, name) {
+            if (confirm(`Bạn có chắc muốn xóa nhà cung cấp "${name}" không?`)) {
+                // Nếu xác nhận xóa, submit form xóa tương ứng
+                document.getElementById('delete-form-' + id).submit();
+            }
         }
     </script>
 </x-app-layout>

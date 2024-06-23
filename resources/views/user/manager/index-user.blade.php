@@ -1,5 +1,4 @@
 <x-app-layout>
-
     <div class="container">
         <div class="row mt-3">
             <div class="col">
@@ -28,7 +27,7 @@
                         @endif
                         <form action="{{ route('users.index') }}" method="GET" class="mb-3">
                             <div class="input-group">
-                                <input type="search" name="search" class="form-control" placeholder="Search..." aria-label="Search">
+                                <input type="search" name="search" class="form-control" placeholder="Search..." aria-label="Search" value="{{ request('search') }}">
                                 <div class="input-group-append">
                                     <button class="btn btn-outline-success" type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
                                 </div>
@@ -53,7 +52,7 @@
                                             <td class="d-flex justify-content-center">
                                                 <a href="{{ route('users.show', $user) }}" class="btn btn-info btn-sm mx-2">View</a>
                                                 <a href="{{ route('users.edit', $user) }}" class="btn btn-warning btn-sm mx-2">Edit</a>
-                                                <form action="{{ route('users.destroy', $user) }}" method="POST" style="display: inline-block;">
+                                                <form action="{{ route('users.destroy', $user) }}" method="POST" style="display: inline-block;" onsubmit="return confirmDelete();">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit" class="btn btn-danger btn-sm mx-2">Delete</button>
@@ -77,5 +76,9 @@
                 // Add additional DataTables configuration options if needed
             });
         });
+
+        function confirmDelete() {
+            return confirm('Are you sure you want to delete this user?');
+        }
     </script>
 </x-app-layout>

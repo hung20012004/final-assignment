@@ -16,6 +16,7 @@ class Manufactory extends Model
     protected $fillable = [
         'name',
         'description',
+        'started_at'
     ];
 
     /**
