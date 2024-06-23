@@ -79,8 +79,9 @@
                 <div class="form-group">
                     <strong><label for="state">State:</label></strong>
                     <select name="state" id="state" class="form-control" style="text-align: center">
-                        <option value="1" {{ $order->state == 1 ? 'selected' : '' }}>Đang xử lí</option>
-                        <option value="0" {{ $order->state == 0 ? 'selected' : '' }}>Chưa xử lí</option>
+                        <option value="1" {{ $order->state == 0 ? 'selected' : '' }}>Cancel</option>
+                        <option value="0" {{ $order->state == 1 ? 'selected' : '' }}>Undischarged</option>
+                        <option value="0" {{ $order->state == 2 ? 'selected' : '' }}>Discharged</option>
                     </select>
                     @if ($errors->has('state'))
                         @foreach ($errors->get('state') as $message)

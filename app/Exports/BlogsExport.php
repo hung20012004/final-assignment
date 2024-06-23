@@ -74,6 +74,11 @@ class BlogsExport implements FromArray, WithEvents
                             'argb' => 'FFCCFFCC', // Mã màu xanh lá cây nhạt
                         ],
                     ],
+                    'borders' => [
+                        'allBorders' => [
+                            'borderStyle' => Border::BORDER_THIN,
+                        ],
+                    ],
                 ]);
 
                 // Set column headings manually
@@ -87,6 +92,7 @@ class BlogsExport implements FromArray, WithEvents
                         'bold' => true,
                         'size' => 13,
                         'italic' => true,
+                        //underline để gạch chân
                     ],
                     'alignment' => [
                         'horizontal' => Alignment::HORIZONTAL_CENTER,
@@ -116,14 +122,13 @@ class BlogsExport implements FromArray, WithEvents
                     ],
                 ]);
 
-                // Adjust column widths
                 foreach (range('A', 'H') as $columnID) {
                     $sheet->getColumnDimension($columnID)->setAutoSize(true);
                 }
 
                 // Write data starting from row 3
                 $data = $this->array();
-                $sheet->fromArray($data, null, 'A3');
+                $sheet->fromArray($data, null, 'A3'); // điền vào từ ô A3
             },
         ];
     }

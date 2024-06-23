@@ -21,15 +21,26 @@
                             <div class="alert alert-success" role="alert">
                                 {{ session('success') }}
                             </div>
-                        @endif
-                         <p><strong>ID:</strong> {{ $blog->id }}</p>
-            <p><strong>Title:</strong> {{ $blog->title }}</p>
-            <p><strong>User:</strong> {{ $blog->user->name}}</p>
-            <p><strong>Content:</strong> {{ $blog->content }}</p>
-            <p><strong>Author:</strong> {{ $blog->author }}</p>
-
-                    </div>
-                    <div class="card-footer">
+                        @endif <ul class="list-group list-group-flush">
+                            <li class="list-group-item">
+                              <strong>ID:</strong> {{ $blog->id }}
+                            </li>
+                            <li class="list-group-item">
+                               <strong>Title:</strong> {{ $blog->title }}
+                            </li>
+                            <li class="list-group-item">
+                                <strong>User:</strong> {{ $blog->user->name}}
+                            </li>
+                            <li class="list-group-item">
+                              <strong>Content:</strong> {{ $blog->content }}
+                            </li>
+                            <li class="list-group-item">
+                              <strong>File:</strong> <a href="{{ $blog->file_path }}" target="_blank"> {{ $blog->file_path }}</a>
+                            </li>
+                            <!-- Add any other fields you want to display here -->
+                        </ul>
+                       </div>
+                       <div class="card-footer">
                         <a href="{{ route('users.index') }}" class="btn btn-secondary">Back</a>
                     </div>
                 </div>

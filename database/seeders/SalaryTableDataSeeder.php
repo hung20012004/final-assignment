@@ -46,6 +46,17 @@ class SalaryTableDataSeeder extends Seeder
                     'total_salary' => 13500000, 
                     'created_at' => now(),
                     'updated_at' => now(),
+                   ],
+                 [
+                    'user_id' => 3,
+                    'year' => 2024, 
+                    'month' => 6,
+                    'base_salary' => 13000000,
+                    'allowances' => 500000,
+                    'deductions' => 0,
+                    'total_salary' => 13500000, 
+                    'created_at' => now(),
+                    'updated_at' => now(),
                  ]
         ]);
     }
