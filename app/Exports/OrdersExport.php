@@ -1,7 +1,8 @@
 <?php
 namespace App\Exports;
 
-use App\Models\Customer;
+use App\Models\Order;
+use App\Models\OrderDetail;
 use Maatwebsite\Excel\Concerns\FromArray;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithEvents;
@@ -10,29 +11,39 @@ use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 
-class CustomersExport implements FromArray, WithEvents
+class OrdersExport implements FromArray, WithHeadings, WithEvents
 {
     public function array(): array
-    {
-        $customers = Customer::all();
-        $data = [];
-        $row = 1;
-
-        foreach ($customers as $customer) {
+{
+    $orders = Order::with(['user', 'customer', 'order_detail.laptop'])->get();
+    $data = [];
+    $row = 1; 
+    foreach ($orders as $order) {
+        foreach ($order->order_detail as $orderDetail) {
             $data[] = [
                 'STT' => $row,
-                'ID' => $customer->id,
-                'Tên' => $customer->name,
-                'Địa chỉ' => $customer->address,
-                'Điện thoại' => $customer->phone,
-                'Email' => $customer->email,
-                'Ngày tạo' => $customer->created_at->format('d-m-Y H:i:s'),
-                'Ngày cập nhật' => $customer->updated_at->format('d-m-Y H:i:s'),
+                'ID' => $order->id,
+                'NVBH' => $order->user->name,
+                'Khách hàng' => $order->customer->name,
+                'Laptop' => $orderDetail->laptop->name,
+                'Số lượng' => $orderDetail->quantity,
+                'Giá' => ($orderDetail->laptop->price * $orderDetail->quantity),
+                'Ngày tạo' => $order->created_at->format('d-m-Y H:i:s'),
+                'Ngày cập nhật' => $order->updated_at->format('d-m-Y H:i:s'),
             ];
-            $row++;
         }
 
-        return $data;
+       $row++;
+    }
+
+    return $data;
+}
+
+    public function headings(): array
+    {
+        return [
+            'STT', 'ID', 'NVBH', 'Khách hàng', 'Laptop', 'Số lượng','Giá', 'Ngày tạo', 'Ngày cập nhật'
+        ];
     }
 
     public function registerEvents(): array
@@ -42,10 +53,10 @@ class CustomersExport implements FromArray, WithEvents
                 $sheet = $event->sheet->getDelegate();
 
                 // Merge cells for the header row (A1:H1)
-                $sheet->mergeCells('A1:H1');
+                $sheet->mergeCells('A1:I1');
 
                 // Set header text
-                $sheet->setCellValue('A1', 'DANH SÁCH KHÁCH HÀNG');
+                $sheet->setCellValue('A1', 'DANH SÁCH ĐƠN HÀNG');
 
                 // Set styles for the header row
                 $sheet->getStyle('A1')->applyFromArray([
@@ -58,7 +69,6 @@ class CustomersExport implements FromArray, WithEvents
                         'horizontal' => Alignment::HORIZONTAL_CENTER,
                         'vertical' => Alignment::VERTICAL_CENTER,
                     ],
-
                     'fill' => [
                         'fillType' => Fill::FILL_SOLID,
                         'startColor' => [
@@ -66,13 +76,10 @@ class CustomersExport implements FromArray, WithEvents
                         ],
                     ],
                 ]);
-
-                // Set column headings manually
-                $headings = ['STT', 'ID', 'Tên', 'Địa chỉ', 'Điện thoại', 'Email', 'Ngày tạo', 'Ngày cập nhật'];
+                $headings = ['STT', 'ID', 'NVBH', 'Khách hàng', 'Laptop', 'Số lượng','Giá', 'Ngày tạo', 'Ngày cập nhật'];
                 $sheet->fromArray($headings, null, 'A2');
-
                 // Set styles for the column headings (A2:H2)
-                $sheet->getStyle('A2:H2')->applyFromArray([
+                $sheet->getStyle('A2:I2')->applyFromArray([
                     'font' => [
                         'name' => 'Times New Roman',
                         'bold' => true,
@@ -91,7 +98,7 @@ class CustomersExport implements FromArray, WithEvents
                 ]);
 
                 // Set styles for all data rows (A3:Hn)
-                $sheet->getStyle('A3:H' . ($sheet->getHighestRow() + 2))->applyFromArray([
+                $sheet->getStyle('A3:I' . ($sheet->getHighestRow()))->applyFromArray([
                     'font' => [
                         'name' => 'Times New Roman',
                         'size' => 13,
@@ -108,13 +115,9 @@ class CustomersExport implements FromArray, WithEvents
                 ]);
 
                 // Adjust column widths
-                foreach (range('A', 'H') as $columnID) {
+                foreach (range('A', 'I') as $columnID) {
                     $sheet->getColumnDimension($columnID)->setAutoSize(true);
                 }
-
-                // Write data starting from row 3
-                $data = $this->array();
-                $sheet->fromArray($data, null, 'A3');
             },
         ];
     }

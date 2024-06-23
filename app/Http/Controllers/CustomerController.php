@@ -10,8 +10,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
 use App\Exports\CustomersExport;
 use Maatwebsite\Excel\Facades\Excel;
-
-
+use Illuminate\Support\Facades\DB;
 class CustomerController extends Controller
 {
     /**
@@ -48,7 +47,7 @@ class CustomerController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255|unique:customers,email',
             'address' => 'required|string|max:255',
-            'phone' => 'required|string|max:10 |unique:customers,phone',
+            'phone' => 'required|regex:/^0\d{9}$/|string|max:10 |unique:customers,phone',
         ] /*, [
             'name.required' => 'Bạn cần nhập tên',
             'email.required' => 'Bạn cần nhập email',
@@ -119,8 +118,9 @@ class CustomerController extends Controller
          return redirect()->route('customers.index')->with('success', 'User deleted successfully!');
     }
 
+    
     public function export()
     {
-        return Excel::download(new CustomersExport, 'customers.xlsx');
+        return Excel::download(new CustomersExport(), 'customers.xlsx');
     }
 }

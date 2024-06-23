@@ -1,11 +1,26 @@
 <x-app-layout>
-    @if (session('success'))
-            <div class="alert alert-success mt-2">
-                {{ session('success') }}
+<div class="container">
+        <div class="row mt-3">
+            <div class="col">
+                <x-breadcrumb :links="[
+                    ['url' => route('orders.index'), 'label' => 'Orderrs'],
+                    ['url' => route('orders.show', $order->id), 'label' => 'Show Order'],
+                ]" />
             </div>
-        @endif
-    <div class="container">
-        <h1>Order Information</h1>
+        </div>
+        <div class="row justify-content-center mt-2">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0">Show Order</h5>
+                    </div>
+                   <div class="card-body">
+                            @if (session('success'))
+                                <div class="alert alert-success" role="alert">
+                                    {{ session('success') }}
+                                </div>
+                            @endif
+
         <div>
             <p><strong>ID:</strong> {{ $order->id }}</p>
             <p><strong>Seller name:</strong> {{ $order->user->name }}</p>
@@ -22,24 +37,40 @@
                     </tr>
                   </thead>
                        <tbody>
-                    @php
-                        $total = 0; // Khởi tạo biến tổng tiền
-                    @endphp
+                     @php
+                                        $total = 0; // Khởi tạo biến tổng tiền
+                                        $groupedItems = collect();
+                                    @endphp
 
-                    @foreach ($order->order_detail as $orderDetail)
-                        <tr>
-                            <td>{{ $orderDetail->laptop->name }}</td>
-                            <td>{{ $orderDetail->quantity }}</td>
-                            <td>{{ number_format($orderDetail->laptop->price, 0, ',', '.') }} </td>
-                            <td>{{ $order->state == 1 ? 'Đã xử lý' : 'Chưa xử lý' }}</td>
-                            <td>{{  number_format($orderDetail->quantity * $orderDetail->laptop->price, 0, ',', '.') }}</td>
-                        </tr>
-                        @php
-                            $total += $orderDetail->quantity * $orderDetail->laptop->price; // Cộng vào tổng tiền
+                                    @foreach ($order->order_detail as $orderDetail)
+                                        @php
+                                            $key = $orderDetail->laptop->id;
+                                            if (!$groupedItems->has($key)) {
+                                                $groupedItems->put($key, (object)[
+                                                    'name' => $orderDetail->laptop->name,
+                                                    'quantity' => 0,
+                                                    'price' => $orderDetail->laptop->price,
+                                                ]);
+                                            }
+                                            $groupedItems[$key]->quantity += $orderDetail->quantity;
+                                            $total += $orderDetail->quantity * $orderDetail->laptop->price;
+                                        @endphp
+                                    @endforeach
+
+                                    @foreach ($groupedItems as $item)
+                                        <tr>
+                                            <td>{{ $item->name }}</td>
+                                            <td>{{ $item->quantity }}</td>
+                                            <td>{{ number_format($item->price, 0, ',', '.') }}</td>
+                                            <td>{{ $order->state == 1 ? 'Đã xử lý' : 'Chưa xử lý' }}</td>
+                                            <td>{{ number_format($item->quantity * $item->price, 0, ',', '.') }}</td>
+                                        </tr>
+                                    @endforeach
+
+                            {{-- $total += $orderDetail->quantity * $orderDetail->laptop->price; // Cộng vào tổng tiền
                             // Update total to order_detail
-                            $orderDetail->price = $total;
-                        @endphp
-                    @endforeach
+                            $orderDetail->price = $total; --}}
+
 
                     <tr>
                         <td colspan="4" class="text-right"><strong>Total:</strong></td>
@@ -48,5 +79,7 @@
                 </tbody>
             </table>
         </div>
+    </div>
+    </div>
     </div>
 </x-app-layout>

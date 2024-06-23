@@ -87,4 +87,14 @@ class User extends Authenticatable
     //         }
     //     });
     // }
+
+    public function blog()
+    {
+         return  $this->hasMany(Blog::class);
+    }
+
+     public function salary()
+    {
+         return  $this->hasMany(Salary::class);
+    }
 }
