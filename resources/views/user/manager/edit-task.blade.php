@@ -36,7 +36,8 @@
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label for="user_id">Assign to User:</label>
+                                <label for="user_id">Assign to:</label>
+                                <option value="">--- Select staff ---</option>
                                 <input type="text" class="form-control" value="{{ $task->user->name }}" readonly>
                                 <input type="hidden" name="user_id" value="{{ $task->user_id }}">
                             </div>

@@ -24,7 +24,7 @@
             <div class="form-group">
                 <label for="user_name">Seller Name:</label>
                 <select name="user_id" id="user_id" class="form-control" value="">
-                    <option value="">--- Chọn người bán ---</option>
+                    <option value="">--- Select deller ---</option>
                     @foreach ($users as $key => $user)
                         <option value="{{ $user->id }}" {{ old('user_id') == $user->id ? 'selected' : '' }}>{{ $user->name }}</option>
                     @endforeach
@@ -36,7 +36,7 @@
             <div class="form-group">
                 <label for="customer_name">Customer Name:</label>
                 <select name="customer_id" id="customer_id" class="form-control" value="">
-                    <option value="">--- Chọn khách hàng ---</option>
+                    <option value="">--- Select customer ---</option>
                     @foreach ($customers as $key => $customer)
                         <option value="{{ $customer->id }}" {{ old('customer_id') == $customer->id ? 'selected' : '' }}>{{ $customer->name }}</option>
                     @endforeach
@@ -52,7 +52,7 @@
                     @endphp
                     <label for="laptop_name">Laptop:</label>
                     <select name="laptops[{{ $index }}][laptop_id]" class="form-control laptop-select" onchange="updateTotalPrice(this)" >
-                        <option value="">--- Chọn laptop ---</option>
+                        <option value="">--- Select laptop ---</option>
                         @foreach ($laptops as $laptop)
                             <option value="{{ $laptop->id }}" data-price="{{ $laptop->price }}" {{ old('laptops.'.$index.'.laptop_id') == $laptop->id ? 'selected' : '' }}>{{ $laptop->name }}</option>
                         @endforeach
@@ -106,7 +106,7 @@
                 <button type="button" class="btn btn-secondary" onclick="addLaptop()" style="margin-right: 10px">Add Laptop</button>
                 <button type="submit" class="btn btn-primary">Create</button>
             </div>
-            
+
             <!-- Hidden inputs for storing laptops data -->
             <input type="hidden" id="hidden-laptops" name="hidden_laptops">
         </form>
@@ -114,7 +114,7 @@
  </div>
 </div>
 </div>
-        
+
 </x-app-layout>
 
 <script>
@@ -200,7 +200,7 @@
 
    $(document).on('click', '.remove-laptop', function() {
     const row = $(this).closest('tr');
-    
+
     // Lấy giá tiền của laptop
     const laptopPriceStr = row.find('td:eq(3)').text().trim(); // Giá tiền của 1 laptop
     const laptopPriceCleaned = laptopPriceStr.replace(/\./g, ""); // Xóa dấu chấm
@@ -209,7 +209,7 @@
     // Lấy số lượng
     const quantityStr = row.find('td:eq(2)').text().trim(); // Số lượng
     const quantity = parseInt(quantityStr.replace(/[^0-9]/g, "").trim());
-    
+
     // Tính giá tiền của 1 laptop nhân với số lượng
     const laptopTotal = laptopPrice * quantity;
 
@@ -219,7 +219,7 @@
     // Cập nhật tổng số tiền
     totalAmount -= laptopTotal;
     $('#total-amount').text(totalAmount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' }));
-    
+
     // Xóa hàng trong bảng
     row.remove();
 });
