@@ -19,6 +19,7 @@
                     <a class="collapse-item" href="utilities-color.html">Revenue</a>
                     <a class="collapse-item" href="utilities-border.html">Products</a>
                     <a class="collapse-item" href="utilities-animation.html">Staffs</a>
+                    <a class="collapse-item" href="{{ route ('salary.index') }}">Salaries</a>
                 </div>
             </div>
         </li>
