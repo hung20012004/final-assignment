@@ -8,7 +8,9 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\LaptopController;
 use App\Http\Controllers\UserTaskController;
+use App\Http\Controllers\SalaryController;
 use App\Http\Controllers\DashboardController;
+use App\Models\Salary;
 
 Route::get('/', function () {
     return view('welcome');
@@ -30,6 +32,8 @@ Route::middleware([
         Route::get('/order-statistics', [OrderController::class, 'statistics'])->name('orders.statistics');
     });
     Route::middleware(['accountant'])->group(function () {
+        Route::resource('salary', SalaryController::class);
+        Route::get('/exportSalary', [SalaryController::class, 'export'])->name('salary.export');
     });
     Route::middleware(['seller'])->group(function () {
         Route::resource('customers', CustomerController::class);

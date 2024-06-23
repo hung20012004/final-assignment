@@ -1,30 +1,48 @@
 <x-app-layout>
-    <div class="container">
-        <h1>Create Order</h1>
-        <form action="{{ route('orders.store') }}" method="POST">
+       <div class="container">
+         <div class="container-fluid">
+        <div class="row mx-lg-5 mx-md-0">
+            <x-breadcrumb :links="[
+                ['url' => route('orders.index'), 'label' => 'Orders'],
+                ['url' => route('orders.create'), 'label' => 'Create order'],
+            ]" />
+        </div>
+        <div class="row justify-content-center mx-1 px-1">
+            <div class="col-md-12 col-lg-11 col-sm-12">
+                <div class="px-4 py-5 bg-white shadow-sm mb-5 rounded">
+                    @if ($errors->any())
+                        <div class="alert alert-danger">
+                            <ul>
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+        <form  action="{{ route('orders.store') }}" method="POST">
             @csrf
             <div class="form-group">
                 <label for="user_name">Seller Name:</label>
-                <select name="user_name" id="user_name" class="form-control" value="">
+                <select name="user_id" id="user_id" class="form-control" value="">
                     <option value="">--- Chọn người bán ---</option>
                     @foreach ($users as $key => $user)
-                        <option value="{{ $user->id }}" {{ old('user_name') == $user->id ? 'selected' : '' }}>{{ $user->name }}</option>
+                        <option value="{{ $user->id }}" {{ old('user_id') == $user->id ? 'selected' : '' }}>{{ $user->name }}</option>
                     @endforeach
                 </select>
-                @if ($errors->has('user_name'))
-                    <div style="color: red;">{{ $errors->first('user_name') }}</div>
+                @if ($errors->has('user_id'))
+                    <div style="color: red;">{{ $errors->first('user_id') }}</div>
                 @endif
             </div>
             <div class="form-group">
                 <label for="customer_name">Customer Name:</label>
-                <select name="customer_name" id="customer_name" class="form-control" value="">
+                <select name="customer_id" id="customer_id" class="form-control" value="">
                     <option value="">--- Chọn khách hàng ---</option>
                     @foreach ($customers as $key => $customer)
-                        <option value="{{ $customer->id }}" {{ old('customer_name') == $customer->id ? 'selected' : '' }}>{{ $customer->name }}</option>
+                        <option value="{{ $customer->id }}" {{ old('customer_id') == $customer->id ? 'selected' : '' }}>{{ $customer->name }}</option>
                     @endforeach
                 </select>
-                @if ($errors->has('customer_name'))
-                    <div style="color: red;">{{ $errors->first('customer_name') }}</div>
+                @if ($errors->has('customer_id'))
+                    <div style="color: red;">{{ $errors->first('customer_id') }}</div>
                 @endif
             </div>
             <div id="laptop-container">
@@ -33,19 +51,19 @@
                         $index = 0;
                     @endphp
                     <label for="laptop_name">Laptop:</label>
-                    <select name="laptops[{{ $index }}][laptop_id]" class="form-control laptop-select" onchange="updateTotalPrice()" >
+                    <select name="laptops[{{ $index }}][laptop_id]" class="form-control laptop-select" onchange="updateTotalPrice(this)" >
                         <option value="">--- Chọn laptop ---</option>
                         @foreach ($laptops as $laptop)
                             <option value="{{ $laptop->id }}" data-price="{{ $laptop->price }}" {{ old('laptops.'.$index.'.laptop_id') == $laptop->id ? 'selected' : '' }}>{{ $laptop->name }}</option>
                         @endforeach
                     </select>
-                    @error('laptops.{{ $index }}.laptop_id')
-                         <div style="color: red;">{{ $message }}</div>
-                     @enderror
-                     <div>
-                    <label for="quantity">Quantity:</label>
-                   <input type="number" name="laptops[{{ $index }}][quantity]" class="form-control quantity-input" value="{{ old('laptops.'.$index.'.quantity') }}" oninput="updateTotalPrice()">
-                       @error('laptops.{{ $index }}.quantity')
+                    @error('laptops.'.$index.'.laptop_id')
+                        <div style="color: red;">{{ $message }}</div>
+                    @enderror
+                    <div>
+                        <label for="quantity">Quantity:</label>
+                        <input type="number" name="laptops[{{ $index }}][quantity]" class="form-control quantity-input" value="{{ old('laptops.'.$index.'.quantity') }}" oninput="updateTotalPrice(this)">
+                        @error('laptops.'.$index.'.quantity')
                             <div style="color: red;">{{ $message }}</div>
                         @enderror
                     </div>
@@ -63,93 +81,155 @@
                     @endforeach
                 @endif
             </div>
-            <div class="form-group">
-                <label for="total">Total:</label>
-                <label id="total" name="total" class="form-control"></label>
+             <div class="row justify-content-center ">
+               <div class="col-md-12 ">
+                <div class="px-4 py-4 bg-white shadow-md mb-2 rounded">
+                    <table id="laptop-list" class="table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Laptop Name</th>
+                                <th>Quantity</th>
+                                <th>Unit Price</th>
+                                <th>Total</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                    <div style="text-align: right"><strong>Total Amount: </strong><span id="total-amount">0</span></div>
+                </div>
+               </div>
+             </div>
+            <div style="margin-left: 680px" class="form-row">
+                <button type="button" class="btn btn-secondary" onclick="addLaptop()" style="margin-right: 10px">Add Laptop</button>
+                <button type="submit" class="btn btn-primary">Create</button>
             </div>
-            <div style="padding-top: 5px" class="form-row">
-                <button type="button" class="btn btn-secondary" onclick="addLaptop()">Add Another Laptop</button>
-                 <button type="submit" class="btn btn-primary">Create</button>
-            </div>
+            
+            <!-- Hidden inputs for storing laptops data -->
+            <input type="hidden" id="hidden-laptops" name="hidden_laptops">
         </form>
     </div>
+ </div>
+</div>
+</div>
+        
 </x-app-layout>
 
-
 <script>
-function addLaptop() {
-    const laptopContainer = document.getElementById('laptop-container');
-    const laptopItems = document.querySelectorAll('.laptop-item');
-    const newIndex = laptopItems.length;
+    let laptopCount = 0;
+    let totalAmount = 0;
+    let laptopsData = []; // Array to store laptops data
 
-    const newLaptopItem = document.createElement('div');
-    newLaptopItem.classList.add('form-group', 'laptop-item');
-    newLaptopItem.setAttribute('data-index', newIndex);
-
-    newLaptopItem.innerHTML = `
-        <div class="form-row">
-            <div class="form-group col-md-6">
-                <strong><label for="laptop_name" style="color: #04AA6D;">Laptop:</label></strong>
-                <select name="laptops[${newIndex}][laptop_id]" class="form-control laptop-select" onchange="updateTotalPrice()">
-                    <option></option>
-                    @foreach ($laptops as $laptop)
-                        <option value="{{ $laptop->id }}" data-price="{{ $laptop->price }}">{{ $laptop->name }}</option>
-                    @endforeach
-                </select>
-            </div>
-            <div class="form-group col-md-6">
-                <strong><label for="quantity" style="color: #04AA6D;">Quantity:</label></strong>
-                <input type="number" name="laptops[${newIndex}][quantity]" class="form-control quantity-input" value="" oninput="updateTotalPrice()">
-            </div>
-            <div class="remove-button-container" style="margin-left: 1025px;">
-                <button type="button" class="btn btn-outline-danger" onclick="removeLaptop(${newIndex})">Remove</button>
-            </div>
-        </div>
-    `;
-
-    laptopContainer.appendChild(newLaptopItem);
-    updateRemoveButtons();
-    updateTotalPrice();
-}
-
-function removeLaptop(index) {
-    const laptopContainer = document.getElementById('laptop-container');
-    const laptopItem = document.querySelector(`.laptop-item[data-index="${index}"]`);
-
-    if (laptopItem) {
-        laptopContainer.removeChild(laptopItem);
-        updateRemoveButtons();
-        updateTotalPrice();
+    function updateTotalPrice(element) {
+        const laptopSelect = $(element).closest('.laptop-item').find('.laptop-select');
+        const selectedOption = laptopSelect.find('option:selected');
+        const price = parseFloat(selectedOption.data('price')) || 0;
+        const quantity = parseInt($(element).closest('.laptop-item').find('.quantity-input').val()) || 0;
+        const totalPrice = price * quantity;
+        $(element).closest('.laptop-item').find('.total-price').text(totalPrice.toLocaleString() + ' VND');
     }
-}
 
-function updateRemoveButtons() {
-    const removeButtons = document.querySelectorAll('.remove-button-container');
-    if (removeButtons.length === 1) {
-        removeButtons[0].style.display = 'none';
-    } else {
-        removeButtons.forEach(button => button.style.display = 'block');
+    function addLaptop() {
+       const laptopSelect = $('.laptop-item:last .laptop-select');
+    const laptopId = laptopSelect.val();
+    const laptopName = laptopSelect.find('option:selected').text();
+    const quantityToAdd = parseInt($('.laptop-item:last .quantity-input').val()) || 0;
+    const laptopPrice = parseFloat(laptopSelect.find('option:selected').data('price')) || 0;
+
+    if (!laptopId || quantityToAdd <= 0) {
+        alert('Please select a laptop and enter a valid quantity.');
+        return;
     }
-}
 
-function updateTotalPrice() {
-    var laptopSelects = document.querySelectorAll('.laptop-select');
-    var quantityInputs = document.querySelectorAll('.quantity-input');
-    var totalLabel = document.getElementById('total');
-    var total = 0;
+    let laptopExists = false;
+    $('#laptop-list tbody tr').each(function() {
+        const row = $(this);
+        const existingLaptopId = row.data('id');
+        if (existingLaptopId == laptopId) {
+            let existingQuantity = parseInt(row.find('td:eq(2)').text().trim());
+            let newQuantity = existingQuantity + quantityToAdd;
+            let newTotal = newQuantity * laptopPrice;
 
-    laptopSelects.forEach((laptopSelect, index) => {
-        var selectedLaptop = laptopSelect.options[laptopSelect.selectedIndex];
-        var price = parseFloat(selectedLaptop.getAttribute('data-price')) || 0;
-        var quantity = parseFloat(quantityInputs[index].value) || 0;
-        total += price * quantity;
+            row.find('td:eq(2)').text(newQuantity);
+            row.find('td:eq(4)').text(newTotal.toLocaleString('vi-VN') + ' VND');
+            laptopExists = true;
+
+            laptopsData.forEach(laptop => {
+                if (laptop.id == laptopId) {
+                    laptop.quantity = newQuantity;
+                    laptop.total = newTotal;
+                }
+            });
+        }
     });
 
-    totalLabel.textContent = formatCurrency(total);
-}
+    if (!laptopExists) {
+        laptopCount++;
+        const laptopTotal = quantityToAdd * laptopPrice;
+        const laptopData = {
+            id: laptopId,
+            name: laptopName,
+            quantity: quantityToAdd,
+            price: laptopPrice,
+            total: laptopTotal
+        };
 
-function formatCurrency(amount) {
-    return amount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
-}
+        laptopsData.push(laptopData);
+
+        const laptopRow = `
+            <tr data-id="${laptopId}">
+                <td>${laptopId}</td>
+                <td>${laptopName}</td>
+                <td>${quantityToAdd}</td>
+                <td>${laptopPrice.toLocaleString()}</td>
+                <td>${laptopTotal.toLocaleString('vi-VN')}</td>
+                <td><button class="btn btn-danger btn-sm remove-laptop">Xóa</button></td>
+            </tr>
+        `;
+        $('#laptop-list tbody').append(laptopRow);
+    }
+
+    totalAmount += quantityToAdd * laptopPrice;
+    $('#total-amount').text(totalAmount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' }));
+    laptopSelect.val('');
+    $('.quantity-input').val('');
+    updateHiddenInput();
+    }
+
+   $(document).on('click', '.remove-laptop', function() {
+    const row = $(this).closest('tr');
+    
+    // Lấy giá tiền của laptop
+    const laptopPriceStr = row.find('td:eq(3)').text().trim(); // Giá tiền của 1 laptop
+    const laptopPriceCleaned = laptopPriceStr.replace(/\./g, ""); // Xóa dấu chấm
+    const laptopPrice = parseFloat(laptopPriceCleaned);
+
+    // Lấy số lượng
+    const quantityStr = row.find('td:eq(2)').text().trim(); // Số lượng
+    const quantity = parseInt(quantityStr.replace(/[^0-9]/g, "").trim());
+    
+    // Tính giá tiền của 1 laptop nhân với số lượng
+    const laptopTotal = laptopPrice * quantity;
+
+    // In giá trị laptopTotal ra console (nếu cần thiết)
+    console.log('Laptop Total (Price * Quantity): ', laptopTotal);
+
+    // Cập nhật tổng số tiền
+    totalAmount -= laptopTotal;
+    $('#total-amount').text(totalAmount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' }));
+    
+    // Xóa hàng trong bảng
+    row.remove();
+});
+
+    function updateHiddenInput() {
+        // Update hidden input value with JSON stringified laptopsData
+        $('#hidden-laptops').val(JSON.stringify(laptopsData));
+    }
+
+    function formatCurrency(amount) {
+        return amount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+    }
 </script>
-

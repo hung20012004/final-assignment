@@ -1,7 +1,25 @@
 <x-app-layout>
     <div class="container">
-        <h1>Create Blogs</h1>
-        <form action="{{ route('blogs.store') }}" method="POST">
+         <div class="container-fluid">
+        <div class="row mx-lg-5 mx-md-0">
+            <x-breadcrumb :links="[
+                ['url' => route('blogs.index'), 'label' => 'Blogs'],
+                ['url' => route('blogs.create'), 'label' => 'Create Blogs'],
+            ]" />
+        </div>
+        <div class="row justify-content-center mx-1 px-1">
+            <div class="col-md-12 col-lg-11 col-sm-12">
+                <div class="px-4 py-5 bg-white shadow-sm mb-5 rounded">
+                    @if ($errors->any())
+                        <div class="alert alert-danger">
+                            <ul>
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+        <form action="{{ route('blogs.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
             <div class="form-group">
                 <label for="name">Title:</label>
@@ -38,9 +56,20 @@
                      @endforeach
                 @endif
             </div>
+            <div class="form-group">
+                <label for="content">Upload File:</label>
+                <input type="file" name="file" id="file" class="form-control">
+                @if ($errors->has('file'))
+                    <div style="color: red;">{{ $errors->first('file') }}</div>
+                @endif
+            </div>
             <!-- Thêm các trường thông tin khác của người dùng nếu cần -->
             <button type="submit" class="btn btn-primary">Create</button>
         </form>
+                </div>
+            </div>
+        </div>
+     </div>
         
         @if (session('success'))
             <div class="alert alert-success mt-2" id="success-message">

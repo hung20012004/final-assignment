@@ -6,6 +6,8 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use App\Exports\BlogsExport;
 use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Storage;
+
 class BlogController extends Controller
 {
     /**
@@ -39,19 +41,37 @@ class BlogController extends Controller
     public function store(Request $request)
     {
         $validatedData = $request->validate([
-            'title'=> 'required|string|max:255',
-            'user_name'=> 'required|string|max:255',
-            'content'=> 'required|string|max:255',
-            'author'=> 'required|string|max:255',
-        ]);
+        'title' => 'required|string|max:255',
+        'user_name' => 'required|integer',
+        'content' => 'required|string|max:255',
+        'author' => 'required|string|max:255',
+        'file' => 'required|file|max:2048',
+    ]);
 
-        $blog = new Blog();
-        $blog->title = $validatedData['title'];
-        $blog->user_id = $validatedData['user_name'];
-        $blog->content = $validatedData['content'];
-        $blog->author = $validatedData['author'];
-        $blog->save();
-         return redirect()->route('blogs.index')->with('success', 'Blog created successfully!');
+    // File Upload
+    $filePath = null;
+    if ($request->hasFile('file')) {
+        $fileName = time() . '_' . $request->file('file')->getClientOriginalName();
+        $filePath = $request->file('file')->storeAs('uploads', $fileName, 'public');
+    }
+
+    // Create Blog Instance
+    $blog = new Blog();
+    $blog->title = $validatedData['title'];
+    $blog->user_id = $validatedData['user_name'];
+    $blog->content = $validatedData['content'];
+    $blog->author = $validatedData['author'];
+
+    // Assign File Path
+    if ($filePath) {
+        $blog->file_path = '/storage/' . $filePath;
+    }
+
+    // Save Blog to Database
+    $blog->save();
+
+    // Redirect with Success Message
+    return redirect()->route('blogs.index')->with('success', 'Blog created successfully!');
         
     }
 
@@ -78,23 +98,40 @@ class BlogController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Blog $blog)
     {
-         $validatedData = $request->validate([
-            'title'=> 'required|string|max:255',
-            'user_name'=> 'required|string|max:255',
-            'content'=> 'required|string|max:255',
-            'author'=> 'required|string|max:255',
-        ]);
-
-        $blog = new Blog();
+        $validatedData = $request->validate([
+        'title' => 'required|string|max:255',
+        'user_name' => 'required|integer',
+        'content' => 'required|string|max:255',
+        'author' => 'required|string|max:255',
+        'file' => 'nullable|file|max:2048', // Cho phép cập nhật tệp tin, giới hạn dung lượng tối đa là 2048 KB (2MB)
+    ]);
         $blog->title = $validatedData['title'];
         $blog->user_id = $validatedData['user_name'];
         $blog->content = $validatedData['content'];
         $blog->author = $validatedData['author'];
-        $blog->update();
 
-          return redirect()->route('blogs.index')->with('update', 'Blog updated successfully!');
+    // Check if there's a new file uploaded
+    if ($request->hasFile('file')) {
+        // Delete old file if exists
+        if ($blog->file_path) {
+            Storage::delete(str_replace('/storage/', 'public/', $blog->file_path));
+        }
+
+        // Upload new file
+        $fileName = time() . '_' . $request->file('file')->getClientOriginalName();
+        $filePath = $request->file('file')->storeAs('uploads', $fileName, 'public');
+
+        // Update file_path in Blog model
+        $blog->file_path = '/storage/' . $filePath;
+    }
+
+    // Save updated Blog to Database
+     $blog->save();
+
+
+         return redirect()->route('blogs.index')->with('success', 'Blog updated successfully!');
     }
 
     /**

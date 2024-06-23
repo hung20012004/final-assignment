@@ -1,22 +1,38 @@
 <x-app-layout>
     <div class="container">
-        <h1>Blogs</h1>
-        <div class="container col-md-12 col-lg-11 col-sm-auto px-md-3 p-3 bg-white shadow-sm mb-5 rounded mx-5">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <div>
-                    <a href="{{ route('blogs.create') }}" class="btn btn-primary">New</a>
-                    <a href="{{ route('blogs.export') }}" class="btn btn-success">Excel</a>
-                </div>
-                <form action="{{ route('blogs.index') }}" method="GET" class="form-inline">
-                    <input class="form-control mr-sm-2" type="search" name="searchUser" placeholder="Search User" aria-label="Search">
-                    <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+         <div class="row mt-3">
+            <div class="col">
+                <x-breadcrumb :links="[
+                    ['url' => route('blogs.index'), 'label' => 'Blogs'],
+                ]" />
+            </div>
+        </div>
+        <div class="row justify-content-center mt-2 mb-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="card-title mb-0">Blogs Management</h5>
+                            <div>
+                                <a href="{{ route('blogs.create') }}" class="btn btn-primary">New</a>
+                                <a href="{{ route('blogs.export') }}" class="btn btn-success">Excel</a>
+                                 </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            @if (session('success'))
+                                <div class="alert alert-success" role="alert">
+                                    {{ session('success') }}
+                                </div>
+                            @endif
+                <form action="{{ route('customers.index') }}" method="GET" class="mb-3">
+                     <div class="input-group">
+                            <input type="search" name="search" class="form-control" placeholder="Search..." aria-label="Search">
+                                <div class="input-group-append">
+                                    <button class="btn btn-outline-success" type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
+                                </div>
+                     </div>
                 </form>
-            </div>
-        @if (session('success'))
-            <div class="alert alert-success mt-2">
-                {{ session('success') }}
-            </div>
-        @endif
         <div class="table-responsive">
         <table id="dataid" class="table table-bordered table-striped mt-2">
             <thead>
@@ -42,7 +58,7 @@
                         <td>
                             <a href="{{ route('blogs.show', $blog) }}" class="btn btn-info">View</a>
                             <a href="{{ route('blogs.edit', $blog) }}" class="btn btn-warning">Edit</a>
-                            
+                            <a href="{{ $blog->file_path }}" class="btn btn-success" target="_blank">Download File</a>
                             <form action="{{ route('blogs.destroy', $blog) }}" method="POST" style="display:inline-block;" onsubmit="return(deleteCustomer())">
                                 @csrf
                                 @method('DELETE')
@@ -53,6 +69,10 @@
                 @endforeach
             </tbody>
         </table>
+        </div>
+</div>
+                </div>
+            </div>
         </div>
     </div>
 </x-app-layout>

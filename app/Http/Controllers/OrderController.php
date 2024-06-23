@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Customer;
@@ -10,7 +10,6 @@ use App\Models\Laptop;
 use App\Models\Order;
 use App\Models\User;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use App\Exports\OrdersExport;
 use Maatwebsite\Excel\Facades\Excel;
@@ -58,57 +57,57 @@ class OrderController extends Controller
     public function store(Request $request)
     {
         $validatedData = $request->validate([
-            'user_name' => 'required|integer', // Assuming user_name is the seller's ID
-            'customer_name' => 'required|integer', // Assuming customer_name is the customer's ID
-            'state' => 'required|boolean', // Assuming state is a boolean (1 or 0)
-            'laptops' => 'required|array|min:1', // Require at least one laptop
-            'laptops.*.laptop_id' => 'required|integer', // Each laptop_id must be an integer
-            'laptops.*.quantity' => 'required|integer|min:1', // Each quantity must be an integer and at least 1
-        ]);
+        'user_id' => 'required|integer|max:255',
+        'customer_id' => 'required|integer|max:255',
+        'state' => 'required|integer|max:255',
+        'hidden_laptops' => 'required', // Đây là input ẩn chứa dữ liệu laptops
+    ]);
 
-        // Create a new Order instance and save it
-        $order = new Order();
-        $order->user_id = $validatedData['user_name'];
-        $order->customer_id = $validatedData['customer_name'];
-        $order->state = $validatedData['state'];
-        $order->save();
+    // Lấy dữ liệu từ hidden-laptops và chuyển đổi thành mảng PHP
+    $laptopsData = json_decode($request->input('hidden_laptops'), true);
 
-        // Iterate through each laptop in the request and create corresponding OrderDetail
-        foreach ($validatedData['laptops'] as $laptopData) {
-            $orderDetail = new OrderDetail();
-            $orderDetail->order_id = $order->id; // Associate the order detail with the newly created order
-            $orderDetail->laptop_id = $laptopData['laptop_id'];
-            $orderDetail->quantity = $laptopData['quantity'];
-
-            // Retrieve the price of the laptop from the database and calculate total price
-            $laptop = Laptop::find($laptopData['laptop_id']);
-            if ($laptop) {
-                $orderDetail->price = $laptop->price * $laptopData['quantity'];
-            } else {
-
-                $orderDetail->price = 0; // Set a default price or handle as needed
-            }
-
-            $orderDetail->save(); // Save the order detail
+    // Kiểm tra số lượng laptop trong kho
+    foreach ($laptopsData as $laptop) {
+        $laptopModel = Laptop::find($laptop['id']);
+        if (!$laptopModel || $laptopModel->quantity < $laptop['quantity']) {
+            return redirect()->back()->with('error', 'Not enough stock for ' . ($laptopModel ? $laptopModel->name : 'a laptop'));
         }
-
-        // Redirect back to the order creation page with a success message
-        return redirect()->route('orders.index')->with('success', 'Order created successfully!');
-
     }
 
-    /**
-     * Display the specified resource.
-     */
+    // Tạo đơn hàng mới
+    $order = new Order();
+    $order->user_id = $validatedData['user_id'];
+    $order->customer_id = $validatedData['customer_id'];
+    $order->state = $validatedData['state'];
+    $order->save();
+
+    // Lưu thông tin chi tiết đơn hàng và cập nhật số lượng laptop trong kho
+    foreach ($laptopsData as $laptop) {
+        $orderDetail = new OrderDetail();
+        $orderDetail->order_id = $order->id; // Sử dụng ID của đơn hàng mới tạo
+        $orderDetail->laptop_id = $laptop['id'];
+        $orderDetail->quantity = $laptop['quantity'];
+        $orderDetail->price = $laptop['total'];
+        $orderDetail->save();
+
+        // Giảm số lượng laptop trong kho
+        $laptopModel = Laptop::find($laptop['id']);
+        $laptopModel->quantity -= $laptop['quantity'];
+        $laptopModel->save();
+    }
+
+    // Redirect or return a response
+    return redirect()->route('orders.index')->with('success', 'Order created successfully.');
+}
+
+ 
     public function show(Order $order)
     {
         $order = Order::findOrFail($order->id);
         return view('user.seller.order.show-order', compact('order'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
+ 
     public function edit(Order $order)
     {
         $order = Order::findOrFail($order->id);
@@ -119,50 +118,62 @@ class OrderController extends Controller
         return view('user.seller.order.edit-order', compact('order', 'users', 'customers', 'laptops'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
+ 
     public function update(Request $request, Order $order)
     {
 
-        $validatedData = $request->validate([
-            'user_id' => 'nullable|integer', // Assuming user_name is the seller's ID
-            'customer_id' => 'nullable|integer', // Assuming customer_name is the customer's ID
-            'state' => 'nullable|boolean', // Assuming state is a boolean (1 or 0)
-            'laptops' => 'nullable|array|min:1', // Require at least one laptop
-            'laptops.*.laptop_id' => 'nullable|integer', // Each laptop_id must be an integer
-            'laptops.*.quantity' => 'nullable|integer|min:1', // Each quantity must be an integer and at least 1
-        ]);
+         $validatedData = $request->validate([
+        'user_id' => 'nullable|integer', // Assuming user_id is the seller's ID
+        'customer_id' => 'nullable|integer', // Assuming customer_id is the customer's ID
+        'state' => 'nullable|boolean', // Assuming state is a boolean (1 or 0)
+        'laptops' => 'nullable|array|min:1', // Require at least one laptop
+        'laptops.*.laptop_id' => 'nullable|integer', // Each laptop_id must be an integer
+        'laptops.*.quantity' => 'nullable|integer|min:1', // Each quantity must be an integer and at least 1
+    ]);
 
-        // Create a new Order instance and save it
-        $order->user_id = $validatedData['user_id'];
-        $order->customer_id = $validatedData['customer_id'];
-        $order->state = $validatedData['state'];
-        $order->save();
+    // Update order details
+    $order->user_id = $validatedData['user_id'];
+    $order->customer_id = $validatedData['customer_id'];
+    $order->state = $validatedData['state'];
+    $order->save();
 
-        $order->order_detail()->delete();
-        // Iterate through each laptop in the request and create corresponding OrderDetail
-        foreach ($validatedData['laptops'] as $laptopData) {
-            $orderDetail = new OrderDetail();
-            $orderDetail->order_id = $order->id; // Associate the order detail with the newly created order
-            $orderDetail->laptop_id = $laptopData['laptop_id'];
-            $orderDetail->quantity = $laptopData['quantity'];
+    // Delete existing order details and recreate them
+    $order->order_detail()->delete();
 
-            // Retrieve the price of the laptop from the database and calculate total price
-            $laptop = Laptop::find($laptopData['laptop_id']);
-            if ($laptop) {
-                $orderDetail->price = $laptop->price * $laptopData['quantity'];
-            } else {
-                // Handle case where laptop is not found (though it should exist due to validation)
-                // You can add custom error handling logic here if needed
-                // For simplicity, assuming laptop always exists based on validation
-                $orderDetail->price = 0; // Set a default price or handle as needed
-            }
+    // Create new order details based on validated data
+    foreach ($validatedData['laptops'] as $laptopData) {
+        $orderDetail = new OrderDetail();
+        $orderDetail->order_id = $order->id; // Associate the order detail with the order
+        $orderDetail->laptop_id = $laptopData['laptop_id'];
+        $orderDetail->quantity = $laptopData['quantity'];
 
-            $orderDetail->save(); // Save the order detail
+        // Retrieve the price of the laptop from the database and calculate total price
+        $laptop = Laptop::find($laptopData['laptop_id']);
+        if ($laptop) {
+            $orderDetail->price = $laptop->price * $laptopData['quantity'];
+        } else {
+            // Handle case where laptop is not found (though it should exist due to validation)
+            // You can add custom error handling logic here if needed
+            // For simplicity, assuming laptop always exists based on validation
+            $orderDetail->price = 0; // Set a default price or handle as needed
         }
-        return redirect()->route('orders.index', $order)->with('success', 'Customer information updated successfully!');
 
+        $orderDetail->save(); // Save the order detail
+    }
+
+     $laptopsData1 = json_decode($request->input('hidden_laptops'), true);
+        //  dd($laptopsData1);
+        if (!empty($laptopsData1)) {
+        foreach ($laptopsData1 as $laptop) {
+            $orderDetail = new OrderDetail();
+            $orderDetail->order_id = $order->id; // Sử dụng ID của đơn hàng mới tạo
+            $orderDetail->laptop_id = $laptop['id'];
+            $orderDetail->quantity = $laptop['quantity'];
+            $orderDetail->price = $laptop['total'];
+            $orderDetail->save();
+        }}
+
+    return redirect()->route('orders.index')->with('success', 'Order updated successfully.');
     }
 
     /**

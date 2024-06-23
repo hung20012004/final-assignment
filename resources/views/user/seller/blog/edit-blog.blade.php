@@ -1,7 +1,22 @@
 <x-app-layout>
-    <div class="container">
-        <h1>Edit Customer</h1>
-        <form action="{{ route('blogs.update', $blog) }}" method="POST">
+      <div class="container">
+        <div class="row mt-3">
+            <div class="col">
+                <x-breadcrumb :links="[
+                    ['url' => route('blogs.index'), 'label' => 'Blogs'],
+                    ['url' => route('blogs.edit', $blog->id), 'label' => 'Edit Blog'],
+                ]" />
+            </div>
+        </div>
+        <div class="row justify-content-center mt-2">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0">Edit User</h5>
+                    </div>
+                    <div class="card-body">
+
+        <form action="{{ route('blogs.update', $blog) }}" method="POST" enctype="multipart/form-data">
             @method('PUT')
             @csrf
              <div class="form-group">
@@ -39,8 +54,20 @@
                      @endforeach
                 @endif
             </div>
+            <div class="form-group">
+                    <label for="file">File</label>
+                        @if ($blog->file_path)
+                            <p>Current File: <a href="{{ $blog->file_path }}">Download</a></p>
+                            <input type="file" class="form-control-file mt-2" id="file" name="file">
+                        @else
+                        <input type="file" class="form-control-file" id="file" name="file">
+                        @endif
+            </div>
             <!-- Thêm các trường thông tin khác của người dùng nếu cần -->
             <button type="submit" class="btn btn-primary">Save</button>
         </form>
+  </div>
+            </div>
+        </div>
     </div>
 </x-app-layout>
