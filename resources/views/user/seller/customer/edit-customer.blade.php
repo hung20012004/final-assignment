@@ -1,7 +1,22 @@
 <x-app-layout>
-    <div class="container">
-        <h1>Edit Customer</h1>
-        <form action="{{ route('customers.update', $customer) }}" method="POST">
+      <div class="container">
+        <div class="row mt-3">
+            <div class="col">
+                <x-breadcrumb :links="[
+                    ['url' => route('customers.index'), 'label' => 'Customers'],
+                    ['url' => route('customers.edit', $customer->id), 'label' => 'Edit Customer'],
+                ]" />
+            </div>
+        </div>
+        <div class="row justify-content-center mt-2">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0">Edit User</h5>
+                    </div>
+                    <div class="card-body">
+
+         <form action="{{ route('customers.update', $customer) }}" method="POST">
             @method('PUT')
             @csrf
              <div class="form-group">
@@ -22,13 +37,13 @@
             </div>
             <div class="form-group">
                 <label for="phone">Phone:</label>
-                <input type="tel" name="phone" id="phone" class="form-control" value="{{ old('phone',$customer->phone) }}">
-                 @if ($errors->has('phone'))
-                    <div style="color: red;">{{ $errors->first('phone') }}</div>
-                @endif
+                <input type="num" name="phone" id="phone" class="form-control" value="{{ old('phone' , $customer->phone) }}">
             </div>
             <!-- Thêm các trường thông tin khác của người dùng nếu cần -->
             <button type="submit" class="btn btn-primary">Save</button>
         </form>
+</div>
+            </div>
+        </div>
     </div>
 </x-app-layout>

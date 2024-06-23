@@ -1,9 +1,9 @@
 <x-app-layout>
-  <div class="container">
+    <div class="container">
          <div class="row mt-3">
             <div class="col">
                 <x-breadcrumb :links="[
-                    ['url' => route('orders.index'), 'label' => 'Orders'],
+                    ['url' => route('blogs.index'), 'label' => 'Blogs'],
                 ]" />
             </div>
         </div>
@@ -12,10 +12,10 @@
                 <div class="card">
                     <div class="card-header">
                         <div class="d-flex justify-content-between align-items-center">
-                            <h5 class="card-title mb-0">Orders Management</h5>
+                            <h5 class="card-title mb-0">Blogs Management</h5>
                             <div>
-                                <a href="{{ route('orders.create') }}" class="btn btn-primary">New</a>
-                                <a href="{{ route('orders.export') }}" class="btn btn-success">Excel</a>
+                                <a href="{{ route('blogs.create') }}" class="btn btn-primary">New</a>
+                                <a href="{{ route('blogs.export') }}" class="btn btn-success">Excel</a>
                                  </div>
                             </div>
                         </div>
@@ -25,7 +25,7 @@
                                     {{ session('success') }}
                                 </div>
                             @endif
-                <form action="{{ route('orders.index') }}" method="GET" class="mb-3">
+                <form action="{{ route('customers.index') }}" method="GET" class="mb-3">
                      <div class="input-group">
                             <input type="search" name="search" class="form-control" placeholder="Search..." aria-label="Search">
                                 <div class="input-group-append">
@@ -34,39 +34,35 @@
                      </div>
                 </form>
         <div class="table-responsive">
-            <table id="dataid" class="table table-bordered table-striped mt-2">
+        <table id="dataid" class="table table-bordered table-striped mt-2">
             <thead>
-                <tr>
+                <tr >
                     <th>STT</th>
                     <th>ID</th>
-                    <th>Seller Name</th>
-                    <th>Customer Name</th>
-                    <th>Order Time</th>
-                    <th>State</th>
+                    <th>Title</th>
+                    <th>User</th>
+                    <th>Author</th>
+                    <th>Create time</th>
                     <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach ($orders as $key => $order)
-                    <tr>
+                @foreach ($blogs as $key => $blog)
+                    <tr class="item-{{ $blog->id }}">
                         <td>{{ $key+1 }}</td>
-                        <td>{{ $order->id }}</td>
-                        <td>{{ $order->user->name}}</td>
-                        <td>{{ $order->customer->name}}</td>
-                        <td>{{ $order->created_at->format('d-m-Y H:i:s') }}</td>
-                        <td>{{ $order->state == 1 ? 'Đã xử lý' : 'Chưa xử lý' }}</td>
-                          {{-- @if ($order->order_detail)
-                    @else
-                    <td colspan="3">Chi tiết đơn hàng không tồn tại</td>
-                    @endif --}}
+                        <td>{{ $blog->id }}</td>
+                        <td>{{ $blog->title }}</td>
+                        <td>{{ $blog->user->name}}</td>
+                        <td>{{ $blog->author }}</td>
+                        <td>{{ $blog->created_at->format('d-m-Y H:i:s')}}</td>
                         <td>
-                            <a href="{{ route('orders.show', $order) }}" class="btn btn-info">View</a>
-                            <a href="{{ route('orders.edit', $order) }}" class="btn btn-warning">Edit</a>
-                            
-                            <form action="{{ route('orders.destroy', $order) }}" method="POST" style="display:inline-block;" onsubmit="return(deleteOrder())">
+                            <a href="{{ route('blogs.show', $blog) }}" class="btn btn-info">View</a>
+                            <a href="{{ route('blogs.edit', $blog) }}" class="btn btn-warning">Edit</a>
+                            <a href="{{ $blog->file_path }}" class="btn btn-success" target="_blank">Download File</a>
+                            <form action="{{ route('blogs.destroy', $blog) }}" method="POST" style="display:inline-block;" onsubmit="return(deleteCustomer())">
                                 @csrf
                                 @method('DELETE')
-                                <button data-id="{{ $order->id }}" type="submit" class="btn btn-danger btn-delete">Delete</button>
+                                <button data-id="{{ $blog->id }}" type="submit" class="btn btn-danger btn-delete">Delete</button>
                             </form>
                         </td>
                     </tr>
@@ -74,16 +70,15 @@
             </tbody>
         </table>
         </div>
-  </div>
+</div>
                 </div>
             </div>
         </div>
     </div>
-<script type="text/javascript">
+</x-app-layout>
 
-    function deleteOrder() {
-        return confirm('Bạn có chắc chắn muốn xóa ?');
-    };
+
+<script type="text/javascript">
 
      $(document).ready(function() {
             $('#dataid').DataTable({
@@ -91,5 +86,7 @@
             });
         });
 
+    function deleteCustomer() {
+        return confirm('Bạn có chắc chắn muốn xóa ?');
+    };
 </script>
-</x-app-layout>

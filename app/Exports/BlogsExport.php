@@ -1,6 +1,7 @@
 <?php
-namespace App\Exports;
 
+namespace App\Exports;
+use App\Models\Blog;
 use App\Models\Customer;
 use Maatwebsite\Excel\Concerns\FromArray;
 use Maatwebsite\Excel\Concerns\WithHeadings;
@@ -9,25 +10,33 @@ use Maatwebsite\Excel\Events\AfterSheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
+use Maatwebsite\Excel\Concerns\FromCollection;
 
-class CustomersExport implements FromArray, WithEvents
+class BlogsExport implements FromArray, WithEvents
 {
+    /**
+    // * @return \Illuminate\Support\Collection
+    */
+    // public function collection()
+    // {
+    //     return Blog::all();
+    // }
     public function array(): array
     {
-        $customers = Customer::all();
+        $blogs = Blog::all();
         $data = [];
         $row = 1;
 
-        foreach ($customers as $customer) {
+        foreach ($blogs as $blog) {
             $data[] = [
                 'STT' => $row,
-                'ID' => $customer->id,
-                'Tên' => $customer->name,
-                'Địa chỉ' => $customer->address,
-                'Điện thoại' => $customer->phone,
-                'Email' => $customer->email,
-                'Ngày tạo' => $customer->created_at->format('d-m-Y H:i:s'),
-                'Ngày cập nhật' => $customer->updated_at->format('d-m-Y H:i:s'),
+                'ID' => $blog->id,
+                'Tiêu đề' => $blog->title,
+                'Nhân viên' => $blog->user->name,
+                'nội dung' => $blog->pcontent,
+                'Tác giả' => $blog->author,
+                'Ngày tạo' => $blog->created_at->format('d-m-Y H:i:s'),
+                'Ngày cập nhật' => $blog->updated_at->format('d-m-Y H:i:s'),
             ];
             $row++;
         }
@@ -45,7 +54,7 @@ class CustomersExport implements FromArray, WithEvents
                 $sheet->mergeCells('A1:H1');
 
                 // Set header text
-                $sheet->setCellValue('A1', 'DANH SÁCH KHÁCH HÀNG');
+                $sheet->setCellValue('A1', 'DANH SÁCH BÀI VIẾT');
 
                 // Set styles for the header row
                 $sheet->getStyle('A1')->applyFromArray([
@@ -68,7 +77,7 @@ class CustomersExport implements FromArray, WithEvents
                 ]);
 
                 // Set column headings manually
-                $headings = ['STT', 'ID', 'Tên', 'Địa chỉ', 'Điện thoại', 'Email', 'Ngày tạo', 'Ngày cập nhật'];
+                $headings = ['STT', 'ID', 'Tiêu đề', 'Nhân viên', 'Nội dung', 'Tác giả', 'Ngày tạo', 'Ngày cập nhật'];
                 $sheet->fromArray($headings, null, 'A2');
 
                 // Set styles for the column headings (A2:H2)
