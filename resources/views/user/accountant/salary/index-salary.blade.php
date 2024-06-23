@@ -62,7 +62,7 @@
                         <td>
                             <a href="{{ route('salary.show', $salaryindex) }}" class="btn btn-info">View</a>
                             <a href="{{ route('salary.edit', $salaryindex) }}" class="btn btn-warning">Edit</a>
-                            
+
                             <form action="{{ route('salary.destroy', $salaryindex) }}" method="POST" style="display:inline-block;" onsubmit="return(deleteOrder())">
                                 @csrf
                                 @method('DELETE')
@@ -121,7 +121,7 @@
 <script type="text/javascript">
 
     function deleteOrder() {
-        return confirm('Bạn có chắc chắn muốn xóa ?');
+        return confirm('Are you sure you want to delete?');
     };
 
      $(document).ready(function() {

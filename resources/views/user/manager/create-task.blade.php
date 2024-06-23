@@ -19,6 +19,7 @@
                         <div class="form-group">
                             <label for="user_id">Staff:</label>
                             <select name="user_id" id="user_id" class="form-control" required>
+                                <option value="">--- Select staff ---</option>
                                 @foreach($users as $user)
                                     <option value="{{ $user->id }}">{{ $user->name }}</option>
                                 @endforeach
