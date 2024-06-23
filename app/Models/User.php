@@ -72,19 +72,4 @@ class User extends Authenticatable
     public function order() {
          return $this->hasMany(Order::class);
     }
-    // protected static function boot()
-    // {
-    //     parent::boot();
-
-    //     static::saved(function ($user) {
-    //         if ($user->isDirty('profile_photo_path')) {
-    //             if(strpos($user->profile_photo_path, "profile-photos")==0){
-    //                 $path = str_replace('profile-photos', 'WebProject\final-assignment\public\storage\profile-photos', $user->profile_photo_path);
-    //                 $user->update(['profile_photo_path' => $path]);
-    //                 $user->profile_photo_path = $path;
-    //             }
-    //             $user->save();
-    //         }
-    //     });
-    // }
 }
