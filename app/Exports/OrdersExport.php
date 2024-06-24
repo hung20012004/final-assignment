@@ -75,6 +75,11 @@ class OrdersExport implements FromArray, WithHeadings, WithEvents
                             'argb' => 'FFCCFFCC', // Mã màu xanh lá cây nhạt
                         ],
                     ],
+                    'borders' => [
+                        'allBorders' => [
+                            'borderStyle' => Border::BORDER_THIN,
+                        ],
+                    ],
                 ]);
                 $headings = ['STT', 'ID', 'NVBH', 'Khách hàng', 'Laptop', 'Số lượng','Giá', 'Ngày tạo', 'Ngày cập nhật'];
                 $sheet->fromArray($headings, null, 'A2');

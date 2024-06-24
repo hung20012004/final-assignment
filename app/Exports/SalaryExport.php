@@ -80,6 +80,11 @@ class SalaryExport implements FromArray, WithEvents
                         'argb' => 'FFCCFFCC', // Màu mặc định cho dòng chẵn
                     ],
                 ],
+                'borders' => [
+                        'allBorders' => [
+                            'borderStyle' => Border::BORDER_THIN,
+                        ],
+                    ],
             ]);
 
             // Set column headings manually

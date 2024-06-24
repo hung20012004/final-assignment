@@ -15,7 +15,7 @@ class BlogDataSeeder extends Seeder
     {
         DB::table('blogs')->insert([
             [
-                'title' => 'First Blog Post',
+                'title' => 'Sinh nhật cửa hàng 13/5',
                 'user_id' => 2, // Thay đổi user_id tùy theo id của user trong bảng users
                 'content' => 'Mừng sinh nhật cửa hàng',
                 'author' => 'Hoàng Duy',
@@ -23,10 +23,18 @@ class BlogDataSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'title' => 'Second Blog Post',
+                'title' => 'Siêu sale 6/6',
                 'user_id' => 2, // Thay đổi user_id tùy theo id của user trong bảng users
                 'content' => 'Thông báo tri cân khách hàng tháng 6/6',
                 'author' => 'Khoa Trần',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'title' => 'Thông báo nghỉ tết Nguyên Đán 2023',
+                'user_id' => 2, // Thay đổi user_id tùy theo id của user trong bảng users
+                'content' => 'Lịch Nghỉ Tết Nguyên Đán bắt đầu từ 20/1/2023 đến hết 28/1/2023',
+                'author' => '',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],

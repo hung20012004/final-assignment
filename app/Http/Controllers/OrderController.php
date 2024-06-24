@@ -122,56 +122,128 @@ class OrderController extends Controller
     public function update(Request $request, Order $order)
     {
 
-         $validatedData = $request->validate([
-        'user_id' => 'nullable|integer', // Assuming user_id is the seller's ID
-        'customer_id' => 'nullable|integer', // Assuming customer_id is the customer's ID
-        'state' => 'nullable|boolean', // Assuming state is a boolean (1 or 0)
-        'laptops' => 'nullable|array|min:1', // Require at least one laptop
-        'laptops.*.laptop_id' => 'nullable|integer', // Each laptop_id must be an integer
-        'laptops.*.quantity' => 'nullable|integer|min:1', // Each quantity must be an integer and at least 1
+             $validatedData = $request->validate([
+        'user_id' => 'nullable|integer',
+        'customer_id' => 'nullable|integer',
+        'state' => 'nullable|boolean',
+        'laptops' => 'nullable|array|min:1',
+        'laptops.*.laptop_id' => 'nullable|integer',
+        'laptops.*.quantity' => 'nullable|integer|min:1',
     ]);
 
-    // Update order details
+    // Update order information
     $order->user_id = $validatedData['user_id'];
     $order->customer_id = $validatedData['customer_id'];
     $order->state = $validatedData['state'];
     $order->save();
 
-    // Delete existing order details and recreate them
-    $order->order_detail()->delete();
+    // Retrieve current order details
+    $currentOrderDetails = $order->order_detail->keyBy('laptop_id');
 
-    // Create new order details based on validated data
+    // Iterate through each laptop sent from the form
     foreach ($validatedData['laptops'] as $laptopData) {
-        $orderDetail = new OrderDetail();
-        $orderDetail->order_id = $order->id; // Associate the order detail with the order
-        $orderDetail->laptop_id = $laptopData['laptop_id'];
-        $orderDetail->quantity = $laptopData['quantity'];
+        $laptopId = $laptopData['laptop_id'];
+        $newQuantity = $laptopData['quantity'];
 
-        // Retrieve the price of the laptop from the database and calculate total price
-        $laptop = Laptop::find($laptopData['laptop_id']);
-        if ($laptop) {
-            $orderDetail->price = $laptop->price * $laptopData['quantity'];
+        // Check if this laptop exists in the current order details
+        if ($currentOrderDetails->has($laptopId)) {
+            // If exists, update the quantity
+            $orderDetail = $currentOrderDetails[$laptopId];
+
+            // Calculate difference in quantity
+            $difference = $newQuantity - $orderDetail->quantity;
+
+            // Update order detail quantity
+            $orderDetail->quantity = $newQuantity;
+            $orderDetail->save();
+
+            // Update quantity in the warehouse
+            $laptop = Laptop::find($laptopId);
+            if ($laptop) {
+                $laptop->quantity -= $difference;
+                $laptop->save();
+            } else {
+                // Handle case where laptop is not found (though it should exist due to validation)
+                // You can add custom error handling logic here if needed
+                // For simplicity, assuming laptop always exists based on validation
+            }
         } else {
-            // Handle case where laptop is not found (though it should exist due to validation)
-            // You can add custom error handling logic here if needed
-            // For simplicity, assuming laptop always exists based on validation
-            $orderDetail->price = 0; // Set a default price or handle as needed
-        }
+            // Handle case where laptop does not exist in current order details
+            // Create new order detail and deduct quantity from warehouse
+            $orderDetail = new OrderDetail();
+            $orderDetail->order_id = $order->id;
+            $orderDetail->laptop_id = $laptopId;
+            $orderDetail->quantity = $newQuantity;
+            $orderDetail->save();
 
-        $orderDetail->save(); // Save the order detail
+            // Update quantity in the warehouse
+            $laptop = Laptop::find($laptopId);
+            if ($laptop) {
+                $laptop->quantity -= $newQuantity; // Assuming new order quantity will be deducted
+                $laptop->save();
+            } else {
+                // Handle case where laptop is not found (though it should exist due to validation)
+                // You can add custom error handling logic here if needed
+                // For simplicity, assuming laptop always exists based on validation
+            }
+        }
     }
 
-     $laptopsData1 = json_decode($request->input('hidden_laptops'), true);
-        //  dd($laptopsData1);
-        if (!empty($laptopsData1)) {
-        foreach ($laptopsData1 as $laptop) {
-            $orderDetail = new OrderDetail();
-            $orderDetail->order_id = $order->id; // Sử dụng ID của đơn hàng mới tạo
-            $orderDetail->laptop_id = $laptop['id'];
-            $orderDetail->quantity = $laptop['quantity'];
-            $orderDetail->price = $laptop['total'];
+    // Cập nhật số lượng laptop trong đơn hàng dựa trên thông tin từ hidden input
+    $newLaptops = json_decode($request->input('hidden_laptops'), true);
+    if (!empty($newLaptops)) {
+        foreach ($newLaptops as $newLaptop) {
+            $laptopId = $newLaptop['id'];
+            $quantity = $newLaptop['quantity'];
+
+            // Kiểm tra xem laptop này có trong danh sách chi tiết đơn hàng hiện tại không
+            if ($currentOrderDetails->has($laptopId)) {
+                // Nếu có, cập nhật số lượng
+
+                 $orderDetail = $currentOrderDetails[$laptopId];
+
+            // Calculate difference in quantity
+            $difference = $quantity - $orderDetail->quantity;
+
+            // Update order detail quantity
+            $orderDetail->quantity = $quantity;
             $orderDetail->save();
-        }}
+
+            // Update quantity in the warehouse
+            $laptop = Laptop::find($laptopId);
+            if ($laptop) {
+                $laptop->quantity -= $difference;
+                $laptop->save();
+            } else {
+                // Handle case where laptop is not found (though it should exist due to validation)
+                // You can add custom error handling logic here if needed
+                // For simplicity, assuming laptop always exists based on validation
+            }
+
+            } else {
+                // Nếu laptop không có trong danh sách chi tiết đơn hàng hiện tại, thêm mới
+                $orderDetail = new OrderDetail();
+                $orderDetail->order_id = $order->id;
+                $orderDetail->laptop_id = $laptopId;
+                $orderDetail->quantity = $quantity;
+
+                // Lấy giá của laptop từ cơ sở dữ liệu và tính tổng giá
+                $laptop = Laptop::find($laptopId);
+                if ($laptop) {
+                    $laptop->quantity-=$quantity;
+                    $orderDetail->price = $laptop->price * $quantity;
+                    $laptop->save();
+                } else {
+                    // Xử lý trường hợp không tìm thấy laptop (mặc dù theo lý thuyết nó nên tồn tại do validate)
+                    // Bạn có thể thêm xử lý lỗi tùy chỉnh ở đây nếu cần thiết
+                    // Để đơn giản, giả sử laptop luôn tồn tại dựa trên validate
+                    $orderDetail->price = 0; // Thiết lập giá mặc định hoặc xử lý theo nhu cầu
+                }
+
+                $orderDetail->save(); // Lưu chi tiết đơn hàng mới
+            }
+        }
+    }
 
     return redirect()->route('orders.index')->with('success', 'Order updated successfully.');
     }

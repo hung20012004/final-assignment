@@ -28,6 +28,13 @@ class OrderDataSeeder extends Seeder
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
+            [
+                'user_id' => 2,
+                'customer_id' => 3,
+                'state' => 1,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
         ]);
 
     }

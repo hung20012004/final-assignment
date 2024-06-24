@@ -5,7 +5,8 @@
                 <x-breadcrumb :links="[
                     ['url' => route('orders.index'), 'label' => 'Orders'],
                 ]" />
-            </div>
+            </div>    
+            {{-- Dùng x-breadcum để tạo MẢNG chứa các link, mỗi link có url và nhãn tương ỨNG --}}
         </div>
         <div class="row justify-content-center mt-2 mb-4">
             <div class="col-md-12">
@@ -25,11 +26,13 @@
                                     {{ session('success') }}
                                 </div>
                             @endif
-                <form action="{{ route('orders.index') }}" method="GET" class="mb-3">
+                    <form action="{{ route('orders.index') }}" method="GET" class="mb-3"> 
+                         {{-- // Tìm kiếm qua thẻ form  và kiểu get để lấy dữ liệu --}}
                      <div class="input-group">
-                            <input type="search" name="search" class="form-control" placeholder="Search..." aria-label="Search">
+                            <input type="search" name="search" class="form-control" placeholder="Search" aria-label="Search">
                                 <div class="input-group-append">
-                                    <button class="btn btn-outline-success" type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
+                                    <button class="btn btn-outline-success" type="submit"><i class="fa-solid fa-magnifying-glass"></i></button> 
+                                    {{-- Để type submit  --}}
                                 </div>
                      </div>
                 </form>
@@ -47,26 +50,37 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach ($orders as $key => $order)
+                @foreach ($orders as $key => $order) 
+                {{-- orders lấy từ compact --}}
                     <tr>
                         <td>{{ $key+1 }}</td>
                         <td>{{ $order->id }}</td>
                         <td>{{ $order->user->name}}</td>
                         <td>{{ $order->customer->name}}</td>
                         <td>{{ $order->created_at->format('d-m-Y H:i:s') }}</td>
-                        <td>{{ $order->state == 1 ? 'Đã xử lý' : 'Chưa xử lý' }}</td>
+                        <td>
+                            @if ($order->state == 0)
+                                Cancel
+                            @elseif ($order->state == 1)
+                                Undischarged
+                            @else
+                                Discharged
+                            @endif
+                        </td>
                           {{-- @if ($order->order_detail)
                     @else
                     <td colspan="3">Chi tiết đơn hàng không tồn tại</td>
                     @endif --}}
                         <td>
-                            <a href="{{ route('orders.show', $order) }}" class="btn btn-info">View</a>
+                            <a href="{{ route('orders.show', $order) }}" class="btn btn-info">View</a> 
+                             {{-- phải truyền biến order để tí fill dữ liệu lên --}}
                             <a href="{{ route('orders.edit', $order) }}" class="btn btn-warning">Edit</a>
                             
-                            <form action="{{ route('orders.destroy', $order) }}" method="POST" style="display:inline-block;" onsubmit="return(deleteOrder())">
+                            <form action="{{ route('orders.destroy', $order) }}" method="POST" style="display:inline-block;" onsubmit="return(deleteOrder())"> 
+                                {{-- onsubmit dùng khi nào click vào nút submit --}}
                                 @csrf
                                 @method('DELETE')
-                                <button data-id="{{ $order->id }}" type="submit" class="btn btn-danger btn-delete">Delete</button>
+                                <button type="submit" class="btn btn-danger btn-delete">Delete</button>
                             </form>
                         </td>
                     </tr>
@@ -83,6 +97,7 @@
 
     function deleteOrder() {
         return confirm('Bạn có chắc chắn muốn xóa ?');
+        // xác nhận có muốn xóa k
     };
 
      $(document).ready(function() {
@@ -90,6 +105,7 @@
                 dom: 'rtip'
             });
         });
+
 
 </script>
 </x-app-layout>

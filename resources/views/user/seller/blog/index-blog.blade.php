@@ -55,6 +55,7 @@
                         <td>{{ $blog->user->name}}</td>
                         <td>{{ $blog->author }}</td>
                         <td>{{ $blog->created_at->format('d-m-Y H:i:s')}}</td>
+                        
                         <td>
                             <a href="{{ route('blogs.show', $blog) }}" class="btn btn-info">View</a>
                             <a href="{{ route('blogs.edit', $blog) }}" class="btn btn-warning">Edit</a>
