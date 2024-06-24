@@ -44,8 +44,8 @@ class BlogController extends Controller
         'title' => 'required|string|max:255',
         'user_name' => 'required|integer',
         'content' => 'required|string|max:255',
-        'author' => 'required|string|max:255',
-        'file' => 'required|file|max:2048',
+        'author' => 'nullable|string|max:255',
+        'file' => 'nullable|file|max:2048',
     ]);
 
     // File Upload
@@ -104,7 +104,7 @@ class BlogController extends Controller
         'title' => 'required|string|max:255',
         'user_name' => 'required|integer',
         'content' => 'required|string|max:255',
-        'author' => 'required|string|max:255',
+        'author' => 'nullable|string|max:255',
         'file' => 'nullable|file|max:2048', // Cho phép cập nhật tệp tin, giới hạn dung lượng tối đa là 2048 KB (2MB)
     ]);
         $blog->title = $validatedData['title'];

@@ -20,24 +20,34 @@
                                     {{ session('success') }}
                                 </div>
                             @endif
-
-        <div>
-            <p><strong>ID:</strong> {{ $order->id }}</p>
-            <p><strong>Seller name:</strong> {{ $order->user->name }}</p>
-            <p><strong>Customer name:</strong> {{ $order->customer->name }}</p>
-            <p><strong>Order Time:</strong> {{ $order->created_at->format('d-m-Y H:i:s')  }}</p>
-            <table class="table table-bordered mt-2">
-                  <thead style="background-color: #d3d8dc;">
-                    <tr>
-                        <th>Laptop name</th>
-                        <th>Quantity</th>
-                        <th>Price</th>
-                        <th>State</th>
-                        <th>Sum</th>
-                    </tr>
-                  </thead>
-                       <tbody>
-                     @php
+                            <div>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">
+                              <strong>ID:</strong> {{ $order->id }}
+                            </li>
+                            <li class="list-group-item">
+                              <strong>Seller name:</strong> {{ $order->user->name }}
+                            </li>
+                            <li class="list-group-item">
+                                <strong>Customer name:</strong> {{ $order->customer->name }}
+                            </li>
+                            <li class="list-group-item">
+                                <strong>Order Time:</strong> {{ $order->created_at->format('d-m-Y H:i:s')  }}
+                            </li>
+                            <!-- Add any other fields you want to display here -->
+                        </ul>
+                                <table class="table table-bordered mt-2">
+                                    <thead style="background-color: #d3d8dc;">
+                                        <tr>
+                                            <th>Laptop name</th>
+                                            <th>Quantity</th>
+                                            <th>Price</th>
+                                            <th>State</th>
+                                            <th>Sum</th>
+                                        </tr>
+                                    </thead>
+                                        <tbody>
+                                    @php
                                         $total = 0; // Khởi tạo biến tổng tiền
                                         $groupedItems = collect();
                                     @endphp
@@ -62,7 +72,15 @@
                                             <td>{{ $item->name }}</td>
                                             <td>{{ $item->quantity }}</td>
                                             <td>{{ number_format($item->price, 0, ',', '.') }}</td>
-                                            <td>{{ $order->state == 1 ? 'Đã xử lý' : 'Chưa xử lý' }}</td>
+                                            <td>
+                                                @if ($order->state == 0)
+                                                    Cancel
+                                                @elseif ($order->state == 1)
+                                                    Undischarged
+                                                @else
+                                                    Discharged
+                                                @endif
+                                            </td>
                                             <td>{{ number_format($item->quantity * $item->price, 0, ',', '.') }}</td>
                                         </tr>
                                     @endforeach

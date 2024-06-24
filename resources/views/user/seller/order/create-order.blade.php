@@ -72,8 +72,9 @@
             <div class="form-group">
                 <label for="state">State:</label>
                 <select name="state" id="state" class="form-control" value="{{ old('state') }}">
-                    <option value="1">Đang xử lí</option>
-                    <option value="0">Chưa xử lí</option>
+                    <option value="0">Hủy</option>
+                    <option value="1">Chưa thanh toán</option>
+                    <option value="2">Đã thanh toán</option>
                 </select>
                 @if ($errors->has('state'))
                     @foreach ($errors->get('state') as $message)
@@ -118,21 +119,21 @@
 </x-app-layout>
 
 <script>
-    let laptopCount = 0;
-    let totalAmount = 0;
-    let laptopsData = []; // Array to store laptops data
+    let laptopCount = 0;  // Đếm laptop thêm vào
+    let totalAmount = 0;  // Tính tổng tiền
+    let laptopsData = []; // Lưu trữ các Laptop
 
-    function updateTotalPrice(element) {
-        const laptopSelect = $(element).closest('.laptop-item').find('.laptop-select');
-        const selectedOption = laptopSelect.find('option:selected');
-        const price = parseFloat(selectedOption.data('price')) || 0;
-        const quantity = parseInt($(element).closest('.laptop-item').find('.quantity-input').val()) || 0;
-        const totalPrice = price * quantity;
-        $(element).closest('.laptop-item').find('.total-price').text(totalPrice.toLocaleString() + ' VND');
-    }
+    // function updateTotalPrice(element) {
+    //     const laptopSelect = $(element).closest('.laptop-item').find('.laptop-select');
+    //     const selectedOption = laptopSelect.find('option:selected');
+    //     const price = parseFloat(selectedOption.data('price')) || 0;
+    //     const quantity = parseInt($(element).closest('.laptop-item').find('.quantity-input').val()) || 0;
+    //     const totalPrice = price * quantity;
+    //     $(element).closest('.laptop-item').find('.total-price').text(totalPrice.toLocaleString() + ' VND');
+    // }
 
     function addLaptop() {
-       const laptopSelect = $('.laptop-item:last .laptop-select');
+    const laptopSelect = $('.laptop-item:last .laptop-select');
     const laptopId = laptopSelect.val();
     const laptopName = laptopSelect.find('option:selected').text();
     const quantityToAdd = parseInt($('.laptop-item:last .quantity-input').val()) || 0;
@@ -141,70 +142,71 @@
     if (!laptopId || quantityToAdd <= 0) {
         alert('Please select a laptop and enter a valid quantity.');
         return;
-    }
+    } // Nếu không chọn laptop hoặc số lượng sẽ bắt chọn
 
-    let laptopExists = false;
-    $('#laptop-list tbody tr').each(function() {
-        const row = $(this);
-        const existingLaptopId = row.data('id');
-        if (existingLaptopId == laptopId) {
-            let existingQuantity = parseInt(row.find('td:eq(2)').text().trim());
-            let newQuantity = existingQuantity + quantityToAdd;
-            let newTotal = newQuantity * laptopPrice;
+    let laptopExists = false;  // để biến laptop exist = false
+    $('#laptop-list tbody tr').each(function() {// tại table có id là laptop-list và ở phần tbody, các dòng tr
+        const row = $(this);    //gán biến row= các dòng hiện tại 
+        const existingLaptopId = row.data('id');// gán biến existingLaptopId =  dòng hiện tại lấy data-id của dòng
+        if (existingLaptopId == laptopId) {    //nếu  biến exist = cái laptop mà đang chọn ở thẻ selecct
+            let existingQuantity = parseInt(row.find('td:eq(2)').text().trim()); // Lấy số lượng ở dòng số 3 hiện tại ở bảng và ép kiểu
+            let newQuantity = existingQuantity + quantityToAdd;   // Lấy só lượng ở bảng + số lượng ở thẻ input
+            let newTotal = newQuantity * laptopPrice;   // Giá = giá 1 laptop *số lượng mới
 
-            row.find('td:eq(2)').text(newQuantity);
-            row.find('td:eq(4)').text(newTotal.toLocaleString('vi-VN') + ' VND');
+            row.find('td:eq(2)').text(newQuantity);   // Gán lại nội dung lên dòng số 3 là số lượng mới
+            row.find('td:eq(4)').text(newTotal.toLocaleString('vi-VN') + ' VND');   // Gán lại nội dung lên dòng tổng tiền
             laptopExists = true;
 
-            laptopsData.forEach(laptop => {
-                if (laptop.id == laptopId) {
-                    laptop.quantity = newQuantity;
-                    laptop.total = newTotal;
+            laptopsData.forEach(laptop => {   //chạt vòng lặp ccác laptop trong mảng laptop-data
+                if (laptop.id == laptopId) {    // Nếu laptop trong data có id = laptopID(laptop ở thẻ input);
+                    laptop.quantity = newQuantity; // số lượng mới 
+                    laptop.total = newTotal;  // Tổng tiền mới
                 }
             });
         }
     });
 
-    if (!laptopExists) {
-        laptopCount++;
-        const laptopTotal = quantityToAdd * laptopPrice;
-        const laptopData = {
-            id: laptopId,
+    if (!laptopExists) {    // nếu ch có laptop đó ở bảng
+        laptopCount++;     // Tăng số lượng đếm lên
+        const laptopTotal = quantityToAdd * laptopPrice;   // Laptop Total = số lượng ở input * giá
+        const laptopData = {  // Tạo 1 laptop có các thuộc tính
+            id: laptopId,   
             name: laptopName,
             quantity: quantityToAdd,
             price: laptopPrice,
             total: laptopTotal
         };
 
-        laptopsData.push(laptopData);
+        laptopsData.push(laptopData);  // Đẩy vào mảng laptopsData 1 laptopData
 
-        const laptopRow = `
+         // Khởi tạo biền row lưu laptop
+        const laptopRow = `    
             <tr data-id="${laptopId}">
                 <td>${laptopId}</td>
                 <td>${laptopName}</td>
                 <td>${quantityToAdd}</td>
-                <td>${laptopPrice.toLocaleString()}</td>
+                <td>${laptopPrice.toLocaleString()}</td> 
                 <td>${laptopTotal.toLocaleString('vi-VN')}</td>
                 <td><button class="btn btn-danger btn-sm remove-laptop">Xóa</button></td>
             </tr>
         `;
-        $('#laptop-list tbody').append(laptopRow);
+        $('#laptop-list tbody').append(laptopRow); // add vào bảng ở phần tbody dòng laptopRow
     }
 
-    totalAmount += quantityToAdd * laptopPrice;
-    $('#total-amount').text(totalAmount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' }));
-    laptopSelect.val('');
+    totalAmount += quantityToAdd * laptopPrice; //Tổng tiền = số  lượng nhân đơn giấ
+    $('#total-amount').text(totalAmount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' }));  // Chèn số liệu vào ô Tổng tiền
+    laptopSelect.val('');  // Để lại giá trị cho biến chọn laptop và số lượng = ''
     $('.quantity-input').val('');
     updateHiddenInput();
     }
 
-   $(document).on('click', '.remove-laptop', function() {
-    const row = $(this).closest('tr');
-
+   $(document).on('click', '.remove-laptop', function() { 
+    const row = $(this).closest('tr');  // Lấy hàng hiện tại gán vào biển row
+    
     // Lấy giá tiền của laptop
     const laptopPriceStr = row.find('td:eq(3)').text().trim(); // Giá tiền của 1 laptop
     const laptopPriceCleaned = laptopPriceStr.replace(/\./g, ""); // Xóa dấu chấm
-    const laptopPrice = parseFloat(laptopPriceCleaned);
+    const laptopPrice = parseFloat(laptopPriceCleaned);   // ép kiểu để ra giá
 
     // Lấy số lượng
     const quantityStr = row.find('td:eq(2)').text().trim(); // Số lượng
@@ -218,15 +220,15 @@
 
     // Cập nhật tổng số tiền
     totalAmount -= laptopTotal;
-    $('#total-amount').text(totalAmount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' }));
-
+    $('#total-amount').text(totalAmount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })); // in vào thẻ có id total-amount giá tiền
+    
     // Xóa hàng trong bảng
     row.remove();
 });
 
     function updateHiddenInput() {
         // Update hidden input value with JSON stringified laptopsData
-        $('#hidden-laptops').val(JSON.stringify(laptopsData));
+        $('#hidden-laptops').val(JSON.stringify(laptopsData)); // dữ liệu ở laptopsData chuyển thành chuỗi json và gán vào value của input ẩn
     }
 
     function formatCurrency(amount) {

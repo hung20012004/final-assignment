@@ -65,6 +65,11 @@ class CustomersExport implements FromArray, WithEvents
                             'argb' => 'FFCCFFCC', // Mã màu xanh lá cây nhạt
                         ],
                     ],
+                    'borders' => [
+                        'allBorders' => [
+                            'borderStyle' => Border::BORDER_THIN,
+                        ],
+                    ],
                 ]);
 
                 // Set column headings manually
