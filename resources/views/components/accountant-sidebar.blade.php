@@ -3,9 +3,9 @@
             Apps
         </div>
         <li class="nav-item">
-            <a class="nav-link" href="">
+            <a class="nav-link" href="{{ route ('salary.index') }}">
                 <i class="fa-solid fa-money-bill-transfer"></i>
-                <span>Settlement</span></a>
+                <span>Salary</span></a>
         </li>
         <li class="nav-item">
             <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities"
@@ -19,7 +19,7 @@
                     <a class="collapse-item" href="utilities-color.html">Revenue</a>
                     <a class="collapse-item" href="utilities-border.html">Products</a>
                     <a class="collapse-item" href="utilities-animation.html">Staffs</a>
-                    <a class="collapse-item" href="{{ route ('salary.index') }}">Salaries</a>
+                    <a class="collapse-item" href="">Salaries</a>
                 </div>
             </div>
         </li>

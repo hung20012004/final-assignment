@@ -12,15 +12,15 @@
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-header">
-                        <h5 class="card-title mb-0">Edit Invoice</h5>
+                        <h5 class="card-title mb-0">Create invoice</h5>
                     </div>
                 <div class="card_body">
                     <form action="{{ route('invoices.store') }}" method="POST">
                         @csrf
                         <div class="form-group col-md-4">
-                            <label for="provider_id">Provider Name:</label>
+                            <label for="provider_id">Provider:</label>
                             <select name="provider_id" id="provider_id" class="form-control" value="" requided>
-                                <option value="">--- Chọn nhà cung cấp ---</option>
+                                <option value="">--- Select provider ---</option>
                                 @foreach ($providers as $key => $provider)
                                     <option value="{{ $provider->id }}" {{ old('provider_id') == $provider->id ? 'selected' : '' }}>{{ $provider->name }}</option>
                                 @endforeach
@@ -30,7 +30,7 @@
                             <div class="form-group col-md-4 laptop-item">
                                 <label for="laptop_id">Laptop:</label>
                                 <select name="laptops[0][laptop_id]" class="form-control laptop-select " onchange="updateTotalPrice()" requided >
-                                    <option value="">--- Chọn laptop ---</option>
+                                    <option value="">--- Select laptop ---</option>
                                     @foreach ($laptops as $laptop)
                                         <option value="{{ $laptop->id }}" data-price="{{ $laptop->price }}" {{ old('laptops.0.laptop_id') == $laptop->id ? 'selected' : '' }}>{{ $laptop->name }}</option>
                                     @endforeach
@@ -39,11 +39,8 @@
                             <div class="form-group col-md-4 laptop-item">
                                 <label for="quantity">Quantity:</label>
                                 <input type="number" name="laptops[0][quantity]" min="1" class="form-control quantity-input" value="{{ old('laptops.0.quantity') }}" oninput="updateTotalPrice()" requided>
-                            </div>  
-                            <!-- <div class="form-group col-md-2 laptop-item">
-                                <label for="quantity">Price:</label>
-                                <input type="number" name="laptops[0][price]" min="0" class="form-control quantity-input" value="{{ old('laptops.0.price', $laptop->price) }}" oninput="updateTotalPrice()">
-                            </div>                          -->
+                            </div>
+
                         </div>
                         <div class="form-row" style="padding: 0px 0px 0px 15px;">
                             <div class="form-group col-md-4">
@@ -63,7 +60,7 @@
                                 <button type="button" class="btn btn-success" onclick="addLaptop()">Add Another Laptop</button>
                                 <button type="submit" class="btn btn-primary">Create</button>
                         </div>
-                        
+
                     </form>
                 </div>
             </div>

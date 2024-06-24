@@ -14,7 +14,7 @@
         </li>
         <li class="nav-item">
             <a class="nav-link" href="{{ route ('blogs.index') }}">
-                <i class="fa-solid fa-money-bill-transfer"></i>
+                <i class="fa-brands fa-blogger"></i>
                 <span>Blogs</span></a>
         </li>
 
