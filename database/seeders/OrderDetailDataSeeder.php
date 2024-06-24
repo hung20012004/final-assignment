@@ -30,6 +30,14 @@ class OrderDetailDataSeeder extends Seeder
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
+             [
+                'order_id' => 3,
+                'laptop_id' => 2,
+                'quantity' => 1,
+                'price' => 20000000,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
         ]);
     }
 }

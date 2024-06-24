@@ -10,7 +10,7 @@
         <div class="row justify-content-center mx-1 px-1">
             <div class="col-md-12 col-lg-11 col-sm-12">
                 <div class="px-4 py-5 bg-white shadow-sm mb-5 rounded">
-                    @if ($errors->any())
+                    {{-- @if ($errors->any())
                         <div class="alert alert-danger">
                             <ul>
                                 @foreach ($errors->all() as $error)
@@ -18,26 +18,22 @@
                                 @endforeach
                             </ul>
                         </div>
-                    @endif
+                    @endif --}}
         <form action="{{ route('blogs.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
+            <div class="form-group">
+                <label for="author">User:</label>
+                <input type="text" class="form-control" placeholder="{{ Auth::user()->name }}" disabled>
+                <input type="text" name="user_name" id="user_name" class="form-control" value="{{ Auth::user()->id }}" hidden>
+                @if ($errors->has('user_name'))
+                    <div style="color: red;">{{ $errors->first('user_name') }}</div>
+                @endif
+            </div>
             <div class="form-group">
                 <label for="name">Title:</label>
                 <input type="text" name="title" id="title" class="form-control" value="{{ old('title') }}">
                 @if ($errors->has('title'))
                     <div style="color: red;">{{ $errors->first('title') }}</div>
-                @endif
-            </div>
-            <div class="form-group">
-                <label for="author">User:</label>
-                <select name="user_name" id="user_name" class="form-control" value="">
-                    <option value=""></option>
-                    @foreach ($users as $key => $user)
-                        <option value="{{ $user->id }}" {{ old('user_name') == $user->id ? 'selected' : '' }}>{{ $user->name }}</option>
-                    @endforeach
-                </select>
-                @if ($errors->has('user_name'))
-                    <div style="color: red;">{{ $errors->first('user_name') }}</div>
                 @endif
             </div>
             <div class="form-group">
@@ -58,7 +54,7 @@
             </div>
             <div class="form-group">
                 <label for="content">Upload File:</label>
-                <input type="file" name="file" id="file" class="form-control">
+                <input type="file" class="form-control-file mt-2" id="file" name="file" id="file">
                 @if ($errors->has('file'))
                     <div style="color: red;">{{ $errors->first('file') }}</div>
                 @endif

@@ -14,7 +14,7 @@
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-header">
-                        <h5 class="card-title mb-0">Customer Details</h5>
+                        <h5 class="card-title mb-0">Blog Details</h5>
                     </div>
                     <div class="card-body">
                         @if (session('success'))
@@ -29,7 +29,7 @@
                                <strong>Title:</strong> {{ $blog->title }}
                             </li>
                             <li class="list-group-item">
-                                <strong>User:</strong> {{ $blog->user->name}}
+                                <strong>User:</strong> {{ Auth::user()->name}}
                             </li>
                             <li class="list-group-item">
                               <strong>Content:</strong> {{ $blog->content }}

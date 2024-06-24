@@ -17,7 +17,7 @@ class OrdersExport implements FromArray, WithHeadings, WithEvents
 {
     $orders = Order::with(['user', 'customer', 'order_detail.laptop'])->get();
     $data = [];
-    $row = 1; 
+    $row = 0; 
     foreach ($orders as $order) {
         foreach ($order->order_detail as $orderDetail) {
             $data[] = [
@@ -31,9 +31,9 @@ class OrdersExport implements FromArray, WithHeadings, WithEvents
                 'Ngày tạo' => $order->created_at->format('d-m-Y H:i:s'),
                 'Ngày cập nhật' => $order->updated_at->format('d-m-Y H:i:s'),
             ];
+                   $row++;
         }
-
-       $row++;
+        
     }
 
     return $data;

@@ -13,9 +13,9 @@
                 <div class="card">
                     <div class="card-header">
                         <div class="d-flex justify-content-between align-items-center">
-                            <h5 class="card-title mb-0">Quản lý bảng lương</h5>
+                            <h5 class="card-title mb-0">Salary Table</h5>
                             <div>
-                                <a href="{{ route('salary.create') }}" class="btn btn-primary">Tạo mới</a>
+                                <a href="{{ route('salary.create') }}" class="btn btn-primary">Create</a>
                                 <button class="btn btn-success" data-toggle="modal" data-target="#exportModal">Xuất Excel</button>
                             </div>
                         </div>
@@ -33,7 +33,7 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exportModalLabel">Xuất bảng lương</h5>
+                    <h5 class="modal-title" id="exportModalLabel">Export Salary</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -41,7 +41,7 @@
                 <form action="{{ route('salary.export') }}" method="GET">
                     <div class="modal-body">
                         <div class="form-group">
-                            <label for="month">Tháng</label>
+                            <label for="month">Month</label>
                             <select name="month" id="month" class="form-control" required>
                                 @for ($m = 1; $m <= 12; $m++)
                                     <option value="{{ $m }}">{{ $m }}</option>
@@ -49,7 +49,7 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="year">Năm</label>
+                            <label for="year">Year</label>
                             <select name="year" id="year" class="form-control" required>
                                 @for ($y = date('Y') - 10; $y <= date('Y'); $y++)
                                     <option value="{{ $y }}">{{ $y }}</option>
@@ -58,8 +58,8 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
-                        <button type="submit" class="btn btn-success">Xuất</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-success">Export</button>
                     </div>
                 </form>
             </div>

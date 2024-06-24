@@ -21,7 +21,8 @@ class CustomerController extends Controller
         $query = Customer::query();  // tạo 1 câu quenry select * mà chưa có đk
         if($searchName = $request->input('searchName'))
         {
-            $query->where('name', 'like', "%$searchName%");
+            $query->where('name', 'like', "%$searchName%")
+            ->orwhere('address', 'like', "%$searchName%");
         }
     //     if ($searchAddress = $request->input('searchAddress')) {
     //     $query->where('address', 'like', "%$searchAddress%");  // Điều kiện tìm kiếm theo địa chỉ
@@ -93,7 +94,7 @@ class CustomerController extends Controller
     {
          $validatedData = $request->validate([
             'name' => 'nullable|string|max:255',
-            'phone' => 'nullable|string|max:10',
+            'phone' => 'nullable|regex:/^0\d{9}$/|string|max:10 |unique:customers,phone',
             'email' => 'nullable|email|max:255|unique:customers,email,' . $customer->id,
             'address' => 'nullable|string|max:255',
         ]);

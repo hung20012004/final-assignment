@@ -25,7 +25,7 @@
                                     {{ session('success') }}
                                 </div>
                             @endif
-                <form action="{{ route('salary.index') }}" method="GET" class="mb-3">
+                     <form action="{{ route('salary.index') }}" method="GET" class="mb-3">
                      <div class="input-group">
                             <input type="search" name="search" class="form-control" placeholder="Search..." aria-label="Search">
                                 <div class="input-group-append">
@@ -54,7 +54,7 @@
                                 <td>{{ $salaryindex->month }}</td>
                                 <td>{{ $salaryindex->year }}</td>
                                 <td>{{ number_format($salaryindex->total_salary, 0, ',', '.') }}</td>
-                                <td>{{ $salaryindex->created_at->format('d/m/Y H:i:s') }}</td>
+                                <td>{{  \Carbon\Carbon::parse($salaryindex->created_at)->format('H:i d/m/Y')}}</td>
                           {{-- @if ($order->order_detail)
                     @else
                     <td colspan="3">Chi tiết đơn hàng không tồn tại</td>
@@ -85,7 +85,7 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exportModalLabel">Xuất bảng lương</h5>
+                    <h5 class="modal-title" id="exportModalLabel">Export Salary Table</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -93,7 +93,7 @@
                 <form action="{{ route('salary.export') }}" method="GET">
                     <div class="modal-body">
                         <div class="form-group">
-                            <label for="monthexport">Tháng</label>
+                            <label for="monthexport">Month</label>
                             <select name="monthexport" id="monthexport" class="form-control" required>
                                 @for ($m = 1; $m <= 12; $m++)
                                     <option value="{{ $m }}">{{ $m }}</option>
@@ -111,7 +111,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
-                        <button type="submit" class="btn btn-success">Xuất</button>
+                        <button type="submit" class="btn btn-success">Export</button>
                     </div>
                 </form>
             </div>
@@ -121,7 +121,7 @@
 <script type="text/javascript">
 
     function deleteOrder() {
-        return confirm('Are you sure you want to delete?');
+        return confirm('Bạn có chắc chắn muốn xóa?');
     };
 
      $(document).ready(function() {

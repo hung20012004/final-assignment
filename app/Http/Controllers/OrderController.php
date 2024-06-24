@@ -21,11 +21,17 @@ class OrderController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Order::query();    
-        if($searchSeller = $request->input('searchSeller'))
+        $query = Order::query();  
+        // Lấy user_id của user hiện tại
+        $userId = auth()->user()->id;
+
+        // Thêm điều kiện lọc theo user_id
+        $query->where('user_id', $userId); 
+         
+        if($search = $request->input('search'))
         {
-            $query->whereHas('user',function($q) use ($searchSeller){
-                $q->where('name', 'like', "%$searchSeller%");
+            $query->whereHas('customer',function($q) use ($search){
+                $q->where('name', 'like', "%$search%");
             });
         }
 
@@ -56,48 +62,56 @@ class OrderController extends Controller
      */
     public function store(Request $request)
     {
-        $validatedData = $request->validate([
-        'user_id' => 'required|integer|max:255',
-        'customer_id' => 'required|integer|max:255',
-        'state' => 'required|integer|max:255',
-        'hidden_laptops' => 'required', // Đây là input ẩn chứa dữ liệu laptops
-    ]);
+            $validatedData = $request->validate([
+            'user_id' => 'required|integer|max:255',
+            'customer_id' => 'required|integer|max:255',
+            'state' => 'required|integer|max:255',
+            'hidden_laptops' => 'required', // Đây là input ẩn chứa dữ liệu laptops
+        ]);
 
-    // Lấy dữ liệu từ hidden-laptops và chuyển đổi thành mảng PHP
-    $laptopsData = json_decode($request->input('hidden_laptops'), true);
+        // Lấy dữ liệu từ hidden-laptops và chuyển đổi thành mảng PHP
+            $laptopsData = json_decode($request->input('hidden_laptops'), true);
 
-    // Kiểm tra số lượng laptop trong kho
-    foreach ($laptopsData as $laptop) {
-        $laptopModel = Laptop::find($laptop['id']);
-        if (!$laptopModel || $laptopModel->quantity < $laptop['quantity']) {
-            return redirect()->back()->with('error', 'Not enough stock for ' . ($laptopModel ? $laptopModel->name : 'a laptop'));
-        }
-    }
+            // Tạo mảng để chứa các lỗi về số lượng
+            $quantityErrors = [];
 
-    // Tạo đơn hàng mới
-    $order = new Order();
-    $order->user_id = $validatedData['user_id'];
-    $order->customer_id = $validatedData['customer_id'];
-    $order->state = $validatedData['state'];
-    $order->save();
+        // Kiểm tra số lượng laptop trong kho
+            foreach ($laptopsData as $laptop) {
+                $laptopModel = Laptop::find($laptop['id']);
+                if (!$laptopModel || $laptopModel->quantity < $laptop['quantity']) {
+                    // Thêm lỗi vào mảng lỗi
+                    $quantityErrors[] = 'Not enough stock for ' . ($laptopModel ? $laptopModel->name . ' (Available: ' . $laptopModel->quantity . ')' : 'a laptop');
+                }
+            }
 
-    // Lưu thông tin chi tiết đơn hàng và cập nhật số lượng laptop trong kho
-    foreach ($laptopsData as $laptop) {
-        $orderDetail = new OrderDetail();
-        $orderDetail->order_id = $order->id; // Sử dụng ID của đơn hàng mới tạo
-        $orderDetail->laptop_id = $laptop['id'];
-        $orderDetail->quantity = $laptop['quantity'];
-        $orderDetail->price = $laptop['total'];
-        $orderDetail->save();
+            // Nếu có lỗi về số lượng, trả về với thông báo lỗi
+            if (!empty($quantityErrors)) {
+                return redirect()->back()->withErrors(['quantity' => $quantityErrors])->withInput();
+            }
 
-        // Giảm số lượng laptop trong kho
-        $laptopModel = Laptop::find($laptop['id']);
-        $laptopModel->quantity -= $laptop['quantity'];
-        $laptopModel->save();
-    }
+            // Tạo đơn hàng mới
+            $order = new Order();
+            $order->user_id = $validatedData['user_id'];
+            $order->customer_id = $validatedData['customer_id'];
+            $order->state = $validatedData['state'];
+            $order->save();
 
-    // Redirect or return a response
-    return redirect()->route('orders.index')->with('success', 'Order created successfully.');
+        // Lưu thông tin chi tiết đơn hàng và cập nhật số lượng laptop trong kho
+            foreach ($laptopsData as $laptop) {
+                $orderDetail = new OrderDetail();
+                $orderDetail->order_id = $order->id; // Sử dụng ID của đơn hàng mới tạo
+                $orderDetail->laptop_id = $laptop['id'];
+                $orderDetail->quantity = $laptop['quantity'];
+                $orderDetail->price = $laptop['total'];
+                $orderDetail->save();
+
+                // Giảm số lượng laptop trong kho
+                $laptopModel = Laptop::find($laptop['id']);
+                $laptopModel->quantity -= $laptop['quantity'];
+                $laptopModel->save();
+            }
+
+                return redirect()->route('orders.index')->with('success', 'Order created successfully.');
 }
 
  
@@ -121,8 +135,7 @@ class OrderController extends Controller
  
     public function update(Request $request, Order $order)
     {
-
-             $validatedData = $request->validate([
+        $validatedData = $request->validate([
         'user_id' => 'nullable|integer',
         'customer_id' => 'nullable|integer',
         'state' => 'nullable|boolean',
@@ -131,14 +144,53 @@ class OrderController extends Controller
         'laptops.*.quantity' => 'nullable|integer|min:1',
     ]);
 
+    // Retrieve current order details
+    $currentOrderDetails = $order->order_detail->keyBy('laptop_id');
+
+    // Tạo mảng để chứa các lỗi về số lượng
+    $quantityErrors = [];
+
+    // Kiểm tra số lượng laptop trong kho cho tất cả các laptop
+    foreach ($validatedData['laptops'] as $laptopData) {
+        $laptopId = $laptopData['laptop_id'];
+        $newQuantity = $laptopData['quantity'];
+
+        // Lấy model laptop hiện tại
+        $laptopModel = Laptop::find($laptopId);
+
+        // Kiểm tra nếu laptop không tồn tại hoặc số lượng không đủ
+        if ($laptopModel) {
+            $availableQuantity = $laptopModel->quantity;
+
+            if ($currentOrderDetails->has($laptopId)) {
+                // Nếu laptop đã có trong đơn hàng, tính toán sự khác biệt
+                $currentQuantity = $currentOrderDetails[$laptopId]->quantity;
+                $difference = $newQuantity - $currentQuantity;
+
+                if ($difference > 0 && $availableQuantity < $difference) {
+                    $quantityErrors[] = 'Not enough stock for ' . $laptopModel->name . ' (Available: ' . $availableQuantity . ')';
+                }
+            } else {
+                // Nếu là laptop mới, kiểm tra số lượng mới so với tồn kho
+                if ($availableQuantity < $newQuantity) {
+                    $quantityErrors[] = 'Not enough stock for ' . $laptopModel->name . ' (Available: ' . $availableQuantity . ')';
+                }
+            }
+        } else {
+            $quantityErrors[] = 'Laptop with ID ' . $laptopId . ' does not exist.';
+        }
+    }
+
+    // Nếu có lỗi về số lượng, trả về với thông báo lỗi
+    if (!empty($quantityErrors)) {
+        return redirect()->back()->withErrors(['quantity' => $quantityErrors])->withInput();
+    }
+
     // Update order information
     $order->user_id = $validatedData['user_id'];
     $order->customer_id = $validatedData['customer_id'];
     $order->state = $validatedData['state'];
     $order->save();
-
-    // Retrieve current order details
-    $currentOrderDetails = $order->order_detail->keyBy('laptop_id');
 
     // Iterate through each laptop sent from the form
     foreach ($validatedData['laptops'] as $laptopData) {
@@ -162,10 +214,6 @@ class OrderController extends Controller
             if ($laptop) {
                 $laptop->quantity -= $difference;
                 $laptop->save();
-            } else {
-                // Handle case where laptop is not found (though it should exist due to validation)
-                // You can add custom error handling logic here if needed
-                // For simplicity, assuming laptop always exists based on validation
             }
         } else {
             // Handle case where laptop does not exist in current order details
@@ -181,26 +229,67 @@ class OrderController extends Controller
             if ($laptop) {
                 $laptop->quantity -= $newQuantity; // Assuming new order quantity will be deducted
                 $laptop->save();
-            } else {
-                // Handle case where laptop is not found (though it should exist due to validation)
-                // You can add custom error handling logic here if needed
-                // For simplicity, assuming laptop always exists based on validation
             }
         }
     }
 
+
+
     // Cập nhật số lượng laptop trong đơn hàng dựa trên thông tin từ hidden input
     $newLaptops = json_decode($request->input('hidden_laptops'), true);
-    if (!empty($newLaptops)) {
+
+     if (!empty($newLaptops)) {
         foreach ($newLaptops as $newLaptop) {
-            $laptopId = $newLaptop['id'];
-            $quantity = $newLaptop['quantity'];
+            $laptopId = $newLaptop['id']; // số lượng lấy từ bảng
+            $newQuantity = $newLaptop['quantity'];
 
-            // Kiểm tra xem laptop này có trong danh sách chi tiết đơn hàng hiện tại không
-            if ($currentOrderDetails->has($laptopId)) {
-                // Nếu có, cập nhật số lượng
+            // Lấy model laptop hiện tại
+            $laptopModel = Laptop::find($laptopId);
 
-                 $orderDetail = $currentOrderDetails[$laptopId];
+            if ($laptopModel) {
+                $availableQuantity = $laptopModel->quantity;
+
+                if ($currentOrderDetails->has($laptopId)) {
+                    // Nếu laptop đã có trong đơn hàng, tính toán sự khác biệt
+                    $currentQuantity = $currentOrderDetails[$laptopId]->quantity;
+                    $difference = $newQuantity - $currentQuantity;
+
+                    if ($difference > 0 && $availableQuantity < $difference) {
+                        $quantityErrors[] = 'Not enough stock for ' . $laptopModel->name . ' (Available: ' . $availableQuantity . ')';
+                    }
+                } else {
+                    // Nếu là laptop mới, kiểm tra số lượng mới so với tồn kho
+                    if ($availableQuantity < $newQuantity) {
+                        $quantityErrors[] = 'Not enough stock for ' . $laptopModel->name . ' (Available: ' . $availableQuantity . ')';
+                    }
+                }
+            } else {
+                $quantityErrors[] = 'Laptop with ID ' . $laptopId . ' does not exist.';
+            }
+        }
+    }
+
+    // Nếu có lỗi về số lượng, trả về với thông báo lỗi
+    if (!empty($quantityErrors)) {
+        return redirect()->back()->withErrors(['quantity' => $quantityErrors])->withInput();
+    }
+
+    // Update order information
+    $order->user_id = $validatedData['user_id'];
+    $order->customer_id = $validatedData['customer_id'];
+    $order->state = $validatedData['state'];
+    $order->save();
+
+    // Iterate through each laptop sent from the form
+    if(is_array($newLaptops)){
+         foreach ($newLaptops as $newLaptop) {
+        $laptopId = $newLaptop['id'];
+        $quantity = $newLaptop['quantity'];
+
+        // Check if this laptop exists in the current order details
+        if ($currentOrderDetails->has($laptopId)) {
+            // If exists, update the quantity
+            $orderDetail = $currentOrderDetails[$laptopId];
 
             // Calculate difference in quantity
             $difference = $quantity - $orderDetail->quantity;
@@ -214,39 +303,32 @@ class OrderController extends Controller
             if ($laptop) {
                 $laptop->quantity -= $difference;
                 $laptop->save();
+            }
+        } else {
+            // If laptop does not exist in current order details, add new
+            $orderDetail = new OrderDetail();
+            $orderDetail->order_id = $order->id;
+            $orderDetail->laptop_id = $laptopId;
+            $orderDetail->quantity = $quantity;
+
+            // Lấy giá của laptop từ cơ sở dữ liệu và tính tổng giá
+            $laptop = Laptop::find($laptopId);
+            if ($laptop) {
+                $laptop->quantity -= $quantity;
+                $orderDetail->price = $laptop->price * $quantity;
+                $laptop->save();
             } else {
-                // Handle case where laptop is not found (though it should exist due to validation)
-                // You can add custom error handling logic here if needed
-                // For simplicity, assuming laptop always exists based on validation
+                $orderDetail->price = 0;
             }
 
-            } else {
-                // Nếu laptop không có trong danh sách chi tiết đơn hàng hiện tại, thêm mới
-                $orderDetail = new OrderDetail();
-                $orderDetail->order_id = $order->id;
-                $orderDetail->laptop_id = $laptopId;
-                $orderDetail->quantity = $quantity;
-
-                // Lấy giá của laptop từ cơ sở dữ liệu và tính tổng giá
-                $laptop = Laptop::find($laptopId);
-                if ($laptop) {
-                    $laptop->quantity-=$quantity;
-                    $orderDetail->price = $laptop->price * $quantity;
-                    $laptop->save();
-                } else {
-                    // Xử lý trường hợp không tìm thấy laptop (mặc dù theo lý thuyết nó nên tồn tại do validate)
-                    // Bạn có thể thêm xử lý lỗi tùy chỉnh ở đây nếu cần thiết
-                    // Để đơn giản, giả sử laptop luôn tồn tại dựa trên validate
-                    $orderDetail->price = 0; // Thiết lập giá mặc định hoặc xử lý theo nhu cầu
-                }
-
-                $orderDetail->save(); // Lưu chi tiết đơn hàng mới
-            }
+            $orderDetail->save();
         }
     }
+    }
+
 
     return redirect()->route('orders.index')->with('success', 'Order updated successfully.');
-    }
+}
 
     /**
      * Remove the specified resource from storage.

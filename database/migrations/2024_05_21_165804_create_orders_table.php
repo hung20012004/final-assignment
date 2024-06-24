@@ -33,7 +33,7 @@ return new class extends Migration
                   ->constrained()
                   ->cascadeOnDelete();
             $table->integer('quantity');
-            $table->decimal('price');
+            $table->decimal('price',15,0);
             $table->timestamps();
         });
     }
