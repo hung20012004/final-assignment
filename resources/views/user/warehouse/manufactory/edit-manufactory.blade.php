@@ -23,19 +23,19 @@
                                 <input type="text" name="name" id="name" class="form-control" value="{{ $manufactory->name }}" required>
                             </div>
                             <div class="form-group">
-                                <label for="description">Description:</label>
-                                <textarea name="description" id="description" class="form-control">{{ $manufactory->description }}</textarea>
+                                <label for="address">Address:</label>
+                                <input type="text" name="address" id="address" class="form-control" value="{{ $manufactory->address }}" required>
                             </div>
                             <div class="form-group">
-                                <label for="started_at">Started At:</label>
-                                <input type="date" name="started_at" id="started_at" class="form-control" value="{{ $manufactory->start_at }}">
+                                <label for="website">Website:</label>
+                                <input type="url" name="website" id="website" class="form-control" value="{{ $manufactory->website }}">
                             </div>
-                        </div>
-                        <div class="card-footer d-flex justify-content-between">
-                            <a href="{{ route('manufactories.index') }}" class="btn btn-secondary">Back</a>
-                            <button type="submit" class="btn btn-primary" id="btnSave">Save</button>
-                        </div>
-                    </form>
+                    </div>
+                    <div class="card-footer d-flex justify-content-between">
+                        <a href="{{ route('manufactories.index') }}" class="btn btn-secondary">Back</a>
+                        <button type="submit" class="btn btn-primary" id="btnSave">Save</button>
+                    </div>
+                        </form>
                 </div>
             </div>
         </div>

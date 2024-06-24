@@ -22,10 +22,6 @@
                                 <label for="name">Name:</label>
                                 <input type="text" name="name" id="name" class="form-control" value="{{ $category->name }}" required>
                             </div>
-                            <div class="form-group">
-                                <label for="description">Description:</label>
-                                <textarea name="description" id="description" class="form-control">{{ $category->description }}</textarea>
-                            </div>
                         </div>
                         <div class="card-footer d-flex justify-content-between">
                             <a href="{{ route('categories.index') }}" class="btn btn-secondary">Back</a>

@@ -12,7 +12,7 @@
                 <div class="card">
                     <div class="card-header">
                         <div class="d-flex justify-content-between align-items-center">
-                            <h5 class="card-title mb-0">Category Management</h5>
+                            <h5 class="card-title mb-0">Category</h5>
                             <div>
                                 <a href="{{ route('categories.create') }}" class="btn btn-primary">New</a>
                             </div>
@@ -38,8 +38,6 @@
                                     <tr>
                                         <th>ID</th>
                                         <th>Name</th>
-                                        <th>Description</th>
-                                        <th>Created At</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
@@ -48,13 +46,11 @@
                                         <tr>
                                             <td>{{ $category->id }}</td>
                                             <td>{{ $category->name }}</td>
-                                            <td>{{ $category->description }}</td>
-                                            <td>{{ $category->created_at }}</td>
                                             <td class="d-flex justify-content-center">
                                                 <a href="{{ route('categories.edit', $category) }}" class="btn btn-warning btn-sm mx-2">Edit</a>
                                                 <!-- Xóa với popup xác nhận -->
                                                 <button type="button" class="btn btn-danger btn-sm" onclick="confirmDelete('{{ $category->id }}', '{{ $category->name }}')">Delete</button>
-                                                
+
                                                 <!-- Form xóa -->
                                                 <form id="delete-form-{{ $category->id }}" action="{{ route('categories.destroy', $category) }}" method="POST" style="display: none;">
                                                     @csrf
@@ -81,7 +77,7 @@
         });
         // Function xác nhận xóa
         function confirmDelete(id, name) {
-            if (confirm(`Bạn có chắc muốn xóa nhà cung cấp "${name}" không?`)) {
+            if (confirm(`Are you sure you want to delete this task?`)) {
                 // Nếu xác nhận xóa, submit form xóa tương ứng
                 document.getElementById('delete-form-' + id).submit();
             }

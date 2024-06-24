@@ -1,5 +1,5 @@
 <x-app-layout>
-    <div class="container-fluid">
+    <div class="container">
         <div class="row mt-3">
             <div class="col">
                 <x-breadcrumb :links="[
@@ -62,7 +62,7 @@
                                                 <a href="{{ route('laptops.edit', $laptop) }}" class="btn btn-warning btn-sm mx-2">Edit</a>
                                                 <!-- Xóa với popup xác nhận -->
                                                 <button type="button" class="btn btn-danger btn-sm" onclick="confirmDelete('{{ $laptop->id }}', '{{ $laptop->name }}')">Delete</button>
-                                                
+
                                                 <!-- Form xóa -->
                                                 <form id="delete-form-{{ $laptop->id }}" action="{{ route('laptops.destroy', $laptop) }}" method="POST" style="display: none;">
                                                     @csrf
@@ -89,7 +89,7 @@
         });
         // Function xác nhận xóa
         function confirmDelete(id, name) {
-            if (confirm(`Bạn có chắc muốn xóa nhà cung cấp "${name}" không?`)) {
+            if (confirm(`Bạn có chắc muốn xóa laptop "${name}" không?`)) {
                 // Nếu xác nhận xóa, submit form xóa tương ứng
                 document.getElementById('delete-form-' + id).submit();
             }

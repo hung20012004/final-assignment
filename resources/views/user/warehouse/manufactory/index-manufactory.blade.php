@@ -38,8 +38,8 @@
                                     <tr>
                                         <th>ID</th>
                                         <th>Name</th>
-                                        <th>Description</th>
-                                        <th>Start At</th>
+                                        <th>Address</th>
+                                        <th>Website</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
@@ -48,13 +48,13 @@
                                         <tr>
                                             <td>{{ $manufactory->id }}</td>
                                             <td>{{ $manufactory->name }}</td>
-                                            <td>{{ $manufactory->description }}</td>
-                                            <td>{{ $manufactory->started_at }}</td>
+                                            <td>{{ $manufactory->address }}</td>
+                                            <td>{{ $manufactory->website }}</td>
                                             <td class="d-flex justify-content-center">
                                                 <a href="{{ route('manufactories.edit', $manufactory) }}" class="btn btn-warning btn-sm mx-2">Edit</a>
                                                 <!-- Xóa với popup xác nhận -->
                                                 <button type="button" class="btn btn-danger btn-sm" onclick="confirmDelete('{{ $manufactory->id }}', '{{ $manufactory->name }}')">Delete</button>
-                                                
+
                                                 <!-- Form xóa -->
                                                 <form id="delete-form-{{ $manufactory->id }}" action="{{ route('manufactories.destroy', $manufactory) }}" method="POST" style="display: none;">
                                                     @csrf
@@ -81,7 +81,7 @@
         });
         // Function xác nhận xóa
         function confirmDelete(id, name) {
-            if (confirm(`Bạn có chắc muốn xóa nhà cung cấp "${name}" không?`)) {
+            if (confirm(`Are you sure you want to delete this task?`)) {
                 // Nếu xác nhận xóa, submit form xóa tương ứng
                 document.getElementById('delete-form-' + id).submit();
             }

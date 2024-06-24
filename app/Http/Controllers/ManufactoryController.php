@@ -5,14 +5,13 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\Manufactory;
 use Illuminate\Http\Request;
-use Maatwebsite\Excel\Facades\Excel;
 
 class ManufactoryController extends Controller
 {
     public function index(Request $request)
     {
         $query = Manufactory::query();
-        
+
         if ($search = $request->input('search')) {
             $query->where('name', 'like', "%{$search}%");
         }
@@ -37,14 +36,14 @@ class ManufactoryController extends Controller
     {
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
-            'description' => 'nullable|string|max:255',
-            'started_at' => 'nullable|date',
+            'address' => 'required|string|max:255',
+            'website' => 'nullable|url|max:255',
         ]);
 
         $manufactory = new Manufactory();
         $manufactory->name = $validatedData['name'];
-        $manufactory->description = $validatedData['description'] ?? null;
-        $manufactory->started_at = $validatedData['started_at']?? null;
+        $manufactory->address = $validatedData['address'];
+        $manufactory->website = $validatedData['website'] ?? null;
         $manufactory->save();
 
         return redirect()->route('manufactories.index')->with('success', 'Manufactory added successfully!');
@@ -65,13 +64,13 @@ class ManufactoryController extends Controller
     {
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
-            'description' => 'nullable|string|max:255',
-            'started_at' => 'nullable|date',
+            'address' => 'required|string|max:255',
+            'website' => 'nullable|url|max:255',
         ]);
 
         $manufactory->update($validatedData);
 
-        return redirect()->route('manufactories.index', $manufactory)->with('success', 'Manufactory updated successfully!');
+        return redirect()->route('manufactories.index')->with('success', 'Manufactory updated successfully!');
     }
 
     /**

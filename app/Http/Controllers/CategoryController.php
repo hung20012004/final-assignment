@@ -11,7 +11,7 @@ class CategoryController extends Controller
     public function index(Request $request)
     {
         $query = Category::query();
-        
+
         if ($search = $request->input('search')) {
             $query->where('name', 'like', "%{$search}%");
         }
@@ -36,12 +36,10 @@ class CategoryController extends Controller
     {
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
-            'description' => 'nullable|string|max:255',
         ]);
 
         $category = new Category();
         $category->name = $validatedData['name'];
-        $category->description = $validatedData['description'];
         $category->save();
 
         return redirect()->route('categories.index')->with('success', 'Category added successfully!');
@@ -62,7 +60,6 @@ class CategoryController extends Controller
     {
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
-            'description' => 'nullable|string|max:255',
         ]);
 
         $category->update($validatedData);

@@ -16,12 +16,12 @@
                             <input type="text" name="name" id="name" class="form-control" required>
                         </div>
                         <div class="form-group">
-                            <label for="description">Description:</label>
-                            <textarea name="description" id="description" class="form-control"></textarea>
+                            <label for="address">Address:</label>
+                            <input type="text" name="address" id="address" class="form-control">
                         </div>
                         <div class="form-group">
-                            <label for="started_at">Started At:</label>
-                            <input type="date" name="started_at" id="started_at" class="form-control">
+                            <label for="website">Website:</label>
+                            <input type="url" name="website" id="website" class="form-control">
                         </div>
                         <button type="submit" class="btn btn-primary">Create Manufactory</button>
                     </form>

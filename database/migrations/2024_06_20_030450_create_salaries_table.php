@@ -13,10 +13,10 @@ class CreateSalariesTable extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->year('year');
             $table->string('month');
-            $table->decimal('base_salary', 10, 2);
-            $table->decimal('allowances', 10, 2);
-            $table->decimal('deductions', 10, 2);
-            $table->decimal('total_salary', 10, 2);
+            $table->decimal('base_salary', 12, 0);
+            $table->decimal('allowances', 12, 0);
+            $table->decimal('deductions', 12, 0);
+            $table->decimal('total_salary', 12, 0);
             $table->timestamps();
         });
     }

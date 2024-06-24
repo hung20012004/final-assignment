@@ -15,7 +15,6 @@ class Category extends Model
      */
     protected $fillable = [
         'name',
-        'decription',
     ];
     protected $hidden = [
     ];
@@ -25,7 +24,7 @@ class Category extends Model
      * @var array<string, class-string>
      */
     protected $dispatchesEvents = [
-    
+
     ];
 
     /**

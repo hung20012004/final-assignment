@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Exports\ProvidersExport;
@@ -25,24 +24,21 @@ class ProviderController extends Controller
         return view('user.warehouse.provider.index-provider', compact('providers'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         return view('user.warehouse.provider.create-provider');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
             'address' => 'required|string|max:255',
             'phone' => 'required|string|regex:/^\d{8,11}$/|unique:providers,phone',
-            'email' => 'nullable|string|email|max:255',
+            'email' => 'nullable|string|email|max:255|unique:providers,email',
+        ], [
+            'phone.unique' => 'The phone number has already been taken.',
+            'email.unique' => 'The email has already been taken.',
         ]);
 
         $provider = new Provider();
@@ -55,17 +51,11 @@ class ProviderController extends Controller
         return redirect()->route('providers.index')->with('success', 'Provider added successfully!');
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(Provider $provider)
     {
         return view('user.warehouse.provider.edit-provider', compact('provider'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, Provider $provider)
     {
         $validatedData = $request->validate([
@@ -75,18 +65,25 @@ class ProviderController extends Controller
                 'required',
                 'string',
                 'regex:/^\d{8,11}$/',
+                Rule::unique('providers')->ignore($provider->id),
             ],
-            'email' => 'nullable|string|email|max:255',
+            'email' => [
+                'nullable',
+                'string',
+                'email',
+                'max:255',
+                Rule::unique('providers')->ignore($provider->id),
+            ],
+        ], [
+            'phone.unique' => 'The phone number has already been taken.',
+            'email.unique' => 'The email has already been taken.',
         ]);
 
         $provider->update($validatedData);
 
-        return redirect()->route('providers.index', $provider)->with('success', 'Provider updated successfully!');
+        return redirect()->route('providers.index')->with('success', 'Provider updated successfully!');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Provider $provider)
     {
         $provider->delete();

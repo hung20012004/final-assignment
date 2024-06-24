@@ -7,6 +7,7 @@ use App\Http\Controllers\BlogController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\InvoiceController;
+use App\Http\Controllers\AccountantInvoiceController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\LaptopController;
 use App\Http\Controllers\ManufactoryController;
@@ -40,6 +41,7 @@ Route::middleware([
     Route::middleware(['accountant'])->group(function () {
         Route::resource('salary', SalaryController::class);
         Route::get('/exportSalary', [SalaryController::class, 'export'])->name('salary.export');
+        Route::resource('accountantInvoice', AccountantInvoiceController::class);
     });
     Route::middleware(['seller'])->group(function () {
         Route::resource('customers', CustomerController::class);

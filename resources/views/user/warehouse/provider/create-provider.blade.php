@@ -18,6 +18,9 @@
                         <div class="form-group">
                             <label for="phone">Phone:</label>
                             <input type="text" name="phone" id="phone" minlength="8" maxlength="11" class="form-control" required>
+                            @error('phone')
+                                <span class="text-danger">{{ $message }}</span>
+                            @enderror
                         </div>
                         <div class="form-group">
                             <label for="address">Address:</label>
@@ -26,6 +29,9 @@
                         <div class="form-group">
                             <label for="email">Email:</label>
                             <input type="email" name="email" id="email" class="form-control">
+                            @error('email')
+                                <span class="text-danger">{{ $message }}</span>
+                            @enderror
                         </div>
                         <button type="submit" class="btn btn-primary">Create Provider</button>
                     </form>

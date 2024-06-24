@@ -4,8 +4,13 @@
         </div>
         <li class="nav-item">
             <a class="nav-link" href="{{ route ('salary.index') }}">
+                <i class="fa-solid fa-table"></i>
+                <span>Salaries</span></a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ route ('accountantInvoice.index') }}">
                 <i class="fa-solid fa-money-bill-transfer"></i>
-                <span>Salary</span></a>
+                <span>Invoice</span></a>
         </li>
         <li class="nav-item">
             <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities"
