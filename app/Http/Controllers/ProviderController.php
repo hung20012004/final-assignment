@@ -19,7 +19,7 @@ class ProviderController extends Controller
                 ->orWhere('email', 'like', "%{$search}%");
         }
 
-        $providers = $query->paginate(10);
+        $providers = $query->get();
 
         return view('user.warehouse.provider.index-provider', compact('providers'));
     }

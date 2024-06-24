@@ -16,7 +16,7 @@ class ManufactoryController extends Controller
             $query->where('name', 'like', "%{$search}%");
         }
 
-        $manufactories = $query->paginate(10);
+        $manufactories = $query->get();
 
         return view('user.warehouse.manufactory.index-manufactory', compact('manufactories'));
     }

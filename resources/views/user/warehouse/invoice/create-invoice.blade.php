@@ -1,6 +1,5 @@
 <x-app-layout>
-    <div class="container">
-        <div class="container-fluid">
+    <div class="container-fluid">
             <div class="row mx-lg-5 mx-md-0">
                 <x-breadcrumb :links="[
                     ['url' => route('invoices.index'), 'label' => 'Invoices'],
@@ -96,7 +95,6 @@
                     </div>
                 </div>
             </div>
-        </div>
     </div>
 </x-app-layout>
 
