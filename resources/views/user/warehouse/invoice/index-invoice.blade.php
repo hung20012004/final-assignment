@@ -54,11 +54,11 @@
                                             <td>{{ $invoice->created_at->format('H:i d-m-Y') }}</td>
                                             <td class="text-center">
                                                 @if($invoice->state == 2)
-                                                    Đã xử lý
+                                                    Processed
                                                 @elseif($invoice->state == 1)
-                                                    Đang xử lý
+                                                    Processing
                                                 @else
-                                                    Đã hủy
+                                                    Canceled
                                                 @endif
                                             </td>
                                             <td class="d-flex justify-content-center">

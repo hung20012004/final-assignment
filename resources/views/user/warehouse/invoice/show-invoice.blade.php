@@ -34,7 +34,7 @@
                                 <strong>Created at:</strong> {{ $invoice->created_at->format('H:i d-m-Y') }}
                             </li>
                             <li class="list-group-item">
-                                <strong>Status:</strong> {{ $invoice->state == 1 ? 'Đang xử lý' : 'Đã hủy' }}
+                                <strong>Status:</strong> {{ $invoice->state == 1 ? 'Processing' : 'Canceled' }}
                             </li>
                         </ul>
                         <h5 class="mt-4">Laptop Details</h5>

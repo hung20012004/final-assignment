@@ -11,17 +11,19 @@
                 <div class="px-4 py-5 bg-white shadow-sm mb-5 rounded">
                     <form action="{{ route('laptops.store') }}" method="POST">
                         @csrf
-                        <div class="form-group">
-                            <label for="name">Name:</label>
-                            <input type="text" name="name" id="name" class="form-control" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="price">Price:</label>
-                            <input type="number" name="price" id="price" class="form-control" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="quantity">Quantity:</label>
-                            <input type="number" name="quantity" id="quantity" class="form-control" required>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="name">Name:</label>
+                                <input type="text" name="name" id="name" class="form-control" placeholder="Laptop Name" required>
+                            </div>
+                            <div class="form-group col-md-3">
+                                <label for="price">Price:</label>
+                                <input type="number" min="0" name="price" id="price" class="form-control" placeholder="VND" required>
+                            </div>
+                            <div class="form-group col-md-2">
+                                <label for="quantity">Quantity:</label>
+                                <input type="number" min="0" name="quantity" id="quantity" class="form-control" required>
+                            </div>
                         </div>
                         <div class="form-group">
                             <label for="manufactory_id">Manufactory:</label>

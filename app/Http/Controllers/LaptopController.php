@@ -30,7 +30,7 @@ class LaptopController extends Controller
         }
 
         // Paginate results and load view with laptops
-        $laptops = $query->paginate(10);
+        $laptops = $query->get();
 
         return view('user.warehouse.laptop.index-laptop', compact('laptops'));
     }

@@ -16,7 +16,7 @@ class CategoryController extends Controller
             $query->where('name', 'like', "%{$search}%");
         }
 
-        $categories = $query->paginate(10);
+        $categories = $query->get();
 
         return view('user.warehouse.category.index-category', compact('categories'));
     }
