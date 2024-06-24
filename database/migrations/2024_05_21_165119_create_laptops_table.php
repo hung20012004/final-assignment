@@ -50,7 +50,7 @@ return new class extends Migration
             $table->string('audio')->nullable();
             $table->integer('quantity');
             $table->decimal('price',12,0);
-            $table->string('network_and_connection');
+            $table->string('network_and_connection')->nullable();
             $table->string('security')->nullable();
             $table->string('webcam')->nullable();
             $table->string('status');

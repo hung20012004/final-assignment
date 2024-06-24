@@ -24,14 +24,6 @@
                             <input type="number" name="quantity" id="quantity" class="form-control" required>
                         </div>
                         <div class="form-group">
-                            <label for="status">Status:</label>
-                            <select name="status" id="status" class="form-control" required>
-                                <option value="Còn hàng">Còn hàng</option>
-                                <option value="Hết hàng">Hết hàng</option>
-                                <option value="Ngưng kinh doanh">Ngưng kinh doanh</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
                             <label for="manufactory_id">Manufactory:</label>
                             <select name="manufactory_id" id="manufactory_id" class="form-control" required>
                                 @foreach($manufactories as $manufactory)
@@ -46,6 +38,58 @@
                                     <option value="{{ $category->id }}">{{ $category->name }}</option>
                                 @endforeach
                             </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="CPU">CPU:</label>
+                            <input type="text" name="CPU" id="CPU" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="VGA">VGA:</label>
+                            <input type="text" name="VGA" id="VGA" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="RAM">RAM:</label>
+                            <input type="text" name="RAM" id="RAM" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="hard_drive">Hard Drive:</label>
+                            <input type="text" name="hard_drive" id="hard_drive" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="display">Display:</label>
+                            <input type="text" name="display" id="display" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="battery">Battery:</label>
+                            <input type="text" name="battery" id="battery" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="weight">Weight:</label>
+                            <input type="number" name="weight" id="weight" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="material">Material:</label>
+                            <input type="text" name="material" id="material" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="OS">OS:</label>
+                            <input type="text" name="OS" id="OS" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="size">Size:</label>
+                            <input type="text" name="size" id="size" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="ports">Ports:</label>
+                            <input type="text" name="ports" id="ports" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="keyboard">Keyboard:</label>
+                            <input type="text" name="keyboard" id="keyboard" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="audio">Audio:</label>
+                            <input type="text" name="audio" id="audio" class="form-control">
                         </div>
                         <button type="submit" class="btn btn-primary">Create Laptop</button>
                     </form>

@@ -40,7 +40,51 @@
                                 <strong>Quantity:</strong> {{ $laptop->quantity }}
                             </li>
                             <li class="list-group-item">
-                                <strong>Status:</strong> {{ $laptop->status }}
+                                <strong>Status:</strong>
+                                @if ($laptop->quantity > 0)
+                                    Đang kinh doanh
+                                @else
+                                    Hết hàng
+                                @endif
+                            </li>
+                            <li class="list-group-item">
+                                <strong>CPU:</strong> {{ $laptop->CPU }}
+                            </li>
+                            <li class="list-group-item">
+                                <strong>VGA:</strong> {{ $laptop->VGA }}
+                            </li>
+                            <li class="list-group-item">
+                                <strong>RAM:</strong> {{ $laptop->RAM }}
+                            </li>
+                            <li class="list-group-item">
+                                <strong>Hard Drive:</strong> {{ $laptop->hard_drive }}
+                            </li>
+                            <li class="list-group-item">
+                                <strong>Display:</strong> {{ $laptop->display }}
+                            </li>
+                            <li class="list-group-item">
+                                <strong>Battery:</strong> {{ $laptop->battery }}
+                            </li>
+                            <li class="list-group-item">
+                                <strong>Weight:</strong> {{ $laptop->weight }} grams
+                            </li>
+                            <li class="list-group-item">
+                                <strong>Material:</strong> {{ $laptop->material }}
+                            </li>
+                            <li class="list-group-item">
+                                <strong>OS:</strong> {{ $laptop->OS }}
+                            </li>
+                            <li class="list-group-item">
+                                <strong>Size:</strong> {{ $laptop->size }}
+                            </li>
+                            <li class="list-group-item">
+                                <strong>Ports:</strong> {{ $laptop->ports }}
+                            </li>
+                            <li class="list-group-item">
+                                <strong>Keyboard:</strong> {{ $laptop->keyboard }}
+                            </li>
+                            <li class="list-group-item">
+                                <strong>Audio:</strong> {{ $laptop->audio }}
                             </li>
                         </ul>
                     </div>

@@ -14,7 +14,7 @@
                         <div class="d-flex justify-content-between align-items-center">
                             <h5 class="card-title mb-0">Invoices</h5>
                             <div>
-                                <a href="{{ route('accountantInvoices.create') }}" class="btn btn-primary">New Invoice</a>
+                                <a href="{{ route('accountantInvoices.create') }}" class="btn btn-primary">New</a>
                                 <a href="{{ route('accountantInvoices.export') }}" class="btn btn-success">Export to Excel</a>
                             </div>
                         </div>
@@ -37,7 +37,6 @@
                             <table id="dataid" class="table table-bordered mt-3">
                                 <thead class="bg-light text-black text-center">
                                     <tr>
-                                        <th>Invoice Code</th>
                                         <th>User</th>
                                         <th>Provider</th>
                                         <th>Total Amount</th>
