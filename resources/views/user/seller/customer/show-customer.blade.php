@@ -34,6 +34,9 @@
                             <li class="list-group-item">
                                 <strong>Phone: </strong> {{ $customer->phone }}
                             </li>
+                            <li class="list-group-item">
+                                <strong>Created at: </strong> {{ \Carbon\Carbon::parse($customer->created_at)->format('H:i d/m/Y')}}
+                            </li>
                             <!-- Add any other fields you want to display here -->
                         </ul>
                     </div>

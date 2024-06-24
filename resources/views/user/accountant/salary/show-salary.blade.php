@@ -26,7 +26,7 @@
                               <strong>ID: </strong> {{ $salary->id }}
                             </li>
                             <li class="list-group-item">
-                                <strong>Staff Name: </strong> {{ $salary->name }}
+                                <strong>Staff: </strong> {{ $salary->name }}
                             </li>
                             <li class="list-group-item">
                                 <strong>Month: </strong> {{ $salary->month }}

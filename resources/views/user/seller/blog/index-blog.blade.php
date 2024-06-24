@@ -52,10 +52,9 @@
                         <td>{{ $key+1 }}</td>
                         <td>{{ $blog->id }}</td>
                         <td>{{ $blog->title }}</td>
-                        <td>{{ $blog->user->name}}</td>
+                        <td>{{  Auth::user()->name }}</td>
                         <td>{{ $blog->author }}</td>
-                        <td>{{ $blog->created_at->format('d-m-Y H:i:s')}}</td>
-                        
+                        <td> {{ \Carbon\Carbon::parse($blog->created_at)->format('H:i d/m/Y')}}</td>
                         <td>
                             <a href="{{ route('blogs.show', $blog) }}" class="btn btn-info">View</a>
                             <a href="{{ route('blogs.edit', $blog) }}" class="btn btn-warning">Edit</a>

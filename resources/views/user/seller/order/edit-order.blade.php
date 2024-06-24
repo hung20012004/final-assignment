@@ -1,15 +1,24 @@
 <x-app-layout>
     <div class="container">
         <div class="row mt-3">
-            <div class="col">
+            <div class="row mx-lg-5 mx-md-0">
                 <x-breadcrumb :links="[
-                    ['url' => route('orders.index'), 'label' => 'Orderrs'],
+                    ['url' => route('orders.index'), 'label' => 'Orders'],
                     ['url' => route('orders.edit', $order->id), 'label' => 'Edit Order'],
                 ]" />
             </div>
         </div>
-        <div class="row justify-content-center mt-2">
-            <div class="col-md-12">
+        <div class="row justify-content-center mx-1 px-1">
+            <div class="col-md-12 col-lg-11 col-sm-12">
+                 @if($errors->has('quantity'))
+                        <div class="alert alert-danger">
+                            <ul>
+                                @foreach($errors->get('quantity') as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h5 class="card-title mb-0">Edit Order</h5>
@@ -19,24 +28,23 @@
         <form action="{{ route('orders.update', $order) }}" method="POST">
             @csrf
             @method('PUT')
-            <div class="form-group">
+            <div class="form-row">
+                <div class="form-group col-md-6">
                 <strong><label for="name">ID:</label></strong>
                 <input type="text" name="id" id="id" class="form-control" style="text-align: center" value="{{ old('id', $order->id) }}" readonly>
             </div>
-            <div class="form-group">
-                <strong><label for="user_name">Seller Name:</label></strong>
-                <select name="user_id" id="user_id" class="form-control" style="text-align: center">
-                    <option value="{{ $order->user_id }}">{{ $order->user->name }}</option>
-                    @foreach ($users as $user)
-                        <option value="{{ $user->id }}">{{ $user->name }}</option>
-                    @endforeach
-                </select>
+            <div class="form-group col-md-6">
+                <strong><label for="user_name">Seller:</label></strong>
+                <input type="text" class="form-control" style="text-align: center" placeholder="{{ Auth::user()->name }}" disabled>
+                <input type="text" name="user_id" id="user_id" class="form-control" value="{{ Auth::user()->id }}" hidden>
                 @if ($errors->has('user_name'))
                     <div style="color: red;">{{ $errors->first('user_name') }}</div>
                 @endif
             </div>
+            </div>
+            
             <div class="form-group">
-                <strong><label for="customer_name">Customer Name:</label></strong>
+                <strong><label for="customer_name">Customer:</label></strong>
                 <select name="customer_id" id="customer_id" class="form-control" style="text-align: center">
                     <option value="{{ $order->customer_id }}">{{ $order->customer->name }}</option>
                     @foreach ($customers as $customer)
@@ -56,7 +64,6 @@
                         <div class="form-group col-md-6">
                             <strong><label for="laptop_name">Laptop:</label></strong>
                             <select name="laptops[{{ $index }}][laptop_id]" class="form-control laptop-select" onchange="updateTotalPrice()" style="text-align: center">
-                                op
                                 <option value="{{ $orderDetail->laptop_id }}" data-price="{{ $orderDetail->laptop->price }}">{{ $orderDetail->laptop->name }}</option>
                                 @foreach ($laptops as $laptop)
                                     <option value="{{ $laptop->id }}" data-price="{{ $laptop->price }}" {{ old("laptops.{$index}.laptop_id") == $laptop->id ? 'selected' : '' }}>{{ $laptop->name }}</option>
@@ -91,11 +98,11 @@
                  </div>
                  <div class="row justify-content-center ">
                   <div class="col-md-12 ">
-                     <div class="px-4 py-2 bg-white shadow-md mt-3 rounded">
-                        <div class="form-row">
+                     <div class="px-4 py-3 bg-white shadow-md mt-3 rounded">
+                <div class="form-row">
                 <div class="form-group col-md-6">
-                    <strong><label for="new_laptop_name">New Laptop Name:</label></strong>
-                    <select id="new_laptop_name" class="form-control" style="text-align: center">
+                    <strong><label for="new_laptop_name">New Laptop:</label></strong>
+                    <select id="new_laptop_name" class="form-control" style="text-align: center; background: ghostwhite">
                          <option value=""></option>
                         @foreach ($laptops as $laptop)
                             <option value="{{ $laptop->id }}" data-price="{{ $laptop->price }}">{{ $laptop->name }}</option>
@@ -104,7 +111,7 @@
                 </div>
                 <div class="form-group col-md-5">
                     <strong><label for="new_laptop_quantity">Quantity:</label></strong>
-                    <input type="number" id="new_laptop_quantity" class="form-control" style="text-align: center">
+                    <input type="number" id="new_laptop_quantity" class="form-control" style="text-align: center ; background: ghostwhite">
                 </div>
                 <div class="form-group col-md-1">
                     <button type="button" class="btn btn-success" style="margin-top: 30px;" onclick="addNewLaptop()">Add</button>
@@ -139,7 +146,7 @@
              </div>
             <!-- Inputs for adding new laptops -->
             
-            <div class="" style="margin-left: 980px; margin-bottom: 10px">
+            <div class="form-group col-md-12" style=" margin-bottom: 10px; text-align: right">
                 <div style="padding-top: 5px"><button type="submit" class="btn btn-primary">Save</button></div>
             </div>
         </form>
@@ -147,6 +154,45 @@
             </div>
         </div>
     </div>
+
+     <!-- Modal -->
+    <div class="modal fade" id="exportModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exportModalLabel">Export Salary Table</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form action="{{ route('salary.export') }}" method="GET">
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="monthexport">Month</label>
+                            <select name="monthexport" id="monthexport" class="form-control" required>
+                                @for ($m = 1; $m <= 12; $m++)
+                                    <option value="{{ $m }}">{{ $m }}</option>
+                                @endfor
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="year">Năm</label>
+                            <select name="yearexport" id="yearexport" class="form-control" required>
+                                @for ($y = date('Y') - 10; $y <= date('Y'); $y++)
+                                    <option value="{{ $y }}">{{ $y }}</option>
+                                @endfor
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                        <button type="submit" class="btn btn-success">Export</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
 </x-app-layout>
 
 <script>

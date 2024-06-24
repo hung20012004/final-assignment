@@ -63,21 +63,21 @@
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label for="base_salary">Lương cơ bản</label>
+                                <label for="base_salary">Base Salary</label>
                                 <input type="number" class="form-control money" id="base_salary" name="base_salary" value="{{$salary->base_salary,  old('base_salary') }}" required oninput="calculateTotalSalary()">
                                 @if ($errors->has('base_salary'))
                                     <div style="color: red;">{{ $errors->first('base_salary') }}</div>
                                 @endif
                             </div>
                             <div class="form-group">
-                                <label for="allowance">Phụ cấp</label>
+                                <label for="allowance">Allowances</label>
                                 <input type="number" class="form-control money" id="allowance" name="allowance" value="{{  $salary->allowances, old('allowance') }}" required oninput="calculateTotalSalary()">
                                 @if ($errors->has('allowance'))
                                     <div style="color: red;">{{ $errors->first('allowance') }}</div>
                                 @endif
                             </div>
                             <div class="form-group">
-                                <label for="deduction">Khấu trừ</label>
+                                <label for="deduction">Deductions</label>
                                 <input type="number" class="form-control money" id="deduction" name="deduction" value="{{ $salary->deductions,  old('deduction') }}" required oninput="calculateTotalSalary()">
                                 @if ($errors->has('deduction'))
                                     <div style="color: red;">{{ $errors->first('deduction') }}</div>

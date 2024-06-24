@@ -24,7 +24,7 @@
                             <div class="form-group">
                                 <label for="staf_name">Staff:</label>
                                 <select name="staff_id" id="staff_id" class="form-control">
-                                    <option value="">--- Chọn nhân viên---</option>
+                                    <option value=""></option>
                                     @foreach ($users as $key => $user)
                                         <option value="{{ $user->id }}" {{ old('staff_id') == $user->id ? 'selected' : '' }}>{{ $user->name }}</option>
                                     @endforeach
@@ -62,21 +62,21 @@
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label for="base_salary">Lương cơ bản</label>
+                                <label for="base_salary">Base Salary</label>
                                 <input type="number" class="form-control money" id="base_salary" name="base_salary" required oninput="calculateTotalSalary()">
                                 @if ($errors->has('base_salary'))
                                     <div style="color: red;">{{ $errors->first('base_salary') }}</div>
                                 @endif
                             </div>
                             <div class="form-group">
-                                <label for="allowance">Phụ cấp</label>
+                                <label for="allowance">Allowances</label>
                                 <input type="number" class="form-control money" id="allowance" name="allowance" required oninput="calculateTotalSalary()">
                                 @if ($errors->has('allowance'))
                                     <div style="color: red;">{{ $errors->first('allowance') }}</div>
                                 @endif
                             </div>
                             <div class="form-group">
-                                <label for="deduction">Khấu trừ</label>
+                                <label for="deduction">Deductions</label>
                                 <input type="number" class="form-control money" id="deduction" name="deduction" required oninput="calculateTotalSalary()">
                                 @if ($errors->has('deduction'))
                                     <div style="color: red;">{{ $errors->first('deduction') }}</div>

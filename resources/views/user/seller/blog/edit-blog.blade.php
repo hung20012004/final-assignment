@@ -19,23 +19,19 @@
         <form action="{{ route('blogs.update', $blog) }}" method="POST" enctype="multipart/form-data">
             @method('PUT')
             @csrf
+            <div class="form-group">
+                <label for="author">User:</label>
+                <input type="text" class="form-control" placeholder="{{ Auth::user()->name }}" disabled>
+                <input type="text" name="user_name" id="user_name" class="form-control" value="{{ Auth::user()->id }}" hidden>
+                @if ($errors->has('user_name'))
+                    <div style="color: red;">{{ $errors->first('user_name') }}</div>
+                @endif
+            </div>
              <div class="form-group">
                 <label for="name">Title:</label>
                 <input type="text" name="title" id="title" class="form-control" value="{{ old('title', $blog->title) }}">
                 @if ($errors->has('title'))
                     <div style="color: red;">{{ $errors->first('title') }}</div>
-                @endif
-            </div>
-            <div class="form-group">
-                <label for="author">User:</label>
-                <select name="user_name" id="user_name" class="form-control" value="">
-                    <option value="{{ $blog->user_id }}">{{ $blog->user->name }}</option>
-                    @foreach ($users as $key => $user)
-                        <option value="{{ $user->id }}" {{ old('user_name', $blog->user->name) == $user->id ? 'selected' : '' }}>{{ $user->name }}</option>
-                    @endforeach
-                </select>
-                @if ($errors->has('user_name'))
-                    <div style="color: red;">{{ $errors->first('user_name') }}</div>
                 @endif
             </div>
             <div class="form-group">

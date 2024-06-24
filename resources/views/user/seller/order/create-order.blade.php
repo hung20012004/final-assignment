@@ -10,7 +10,16 @@
         <div class="row justify-content-center mx-1 px-1">
             <div class="col-md-12 col-lg-11 col-sm-12">
                 <div class="px-4 py-5 bg-white shadow-sm mb-5 rounded">
-                    @if ($errors->any())
+                    @if($errors->has('quantity'))
+                        <div class="alert alert-danger">
+                            <ul>
+                                @foreach($errors->get('quantity') as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+                    {{-- @if ($errors->any())
                         <div class="alert alert-danger">
                             <ul>
                                 @foreach ($errors->all() as $error)
@@ -18,25 +27,21 @@
                                 @endforeach
                             </ul>
                         </div>
-                    @endif
+                    @endif --}}
         <form  action="{{ route('orders.store') }}" method="POST">
             @csrf
             <div class="form-group">
-                <label for="user_name">Seller Name:</label>
-                <select name="user_id" id="user_id" class="form-control" value="">
-                    <option value="">--- Select deller ---</option>
-                    @foreach ($users as $key => $user)
-                        <option value="{{ $user->id }}" {{ old('user_id') == $user->id ? 'selected' : '' }}>{{ $user->name }}</option>
-                    @endforeach
-                </select>
+                <label for="user_name">Seller:</label>
+                <input type="text" class="form-control" placeholder="{{ Auth::user()->name }}" disabled>
+                <input type="text" name="user_id" id="user_id" class="form-control" value="{{ Auth::user()->id }}" hidden>
                 @if ($errors->has('user_id'))
                     <div style="color: red;">{{ $errors->first('user_id') }}</div>
                 @endif
             </div>
             <div class="form-group">
-                <label for="customer_name">Customer Name:</label>
+                <label for="customer_name">Customer:</label>
                 <select name="customer_id" id="customer_id" class="form-control" value="">
-                    <option value="">--- Select customer ---</option>
+                    <option value=""></option>
                     @foreach ($customers as $key => $customer)
                         <option value="{{ $customer->id }}" {{ old('customer_id') == $customer->id ? 'selected' : '' }}>{{ $customer->name }}</option>
                     @endforeach
@@ -52,7 +57,7 @@
                     @endphp
                     <label for="laptop_name">Laptop:</label>
                     <select name="laptops[{{ $index }}][laptop_id]" class="form-control laptop-select" onchange="updateTotalPrice(this)" >
-                        <option value="">--- Select laptop ---</option>
+                        <option value=""></option>
                         @foreach ($laptops as $laptop)
                             <option value="{{ $laptop->id }}" data-price="{{ $laptop->price }}" {{ old('laptops.'.$index.'.laptop_id') == $laptop->id ? 'selected' : '' }}>{{ $laptop->name }}</option>
                         @endforeach
@@ -72,9 +77,9 @@
             <div class="form-group">
                 <label for="state">State:</label>
                 <select name="state" id="state" class="form-control" value="{{ old('state') }}">
-                    <option value="0">Hủy</option>
-                    <option value="1">Chưa thanh toán</option>
-                    <option value="2">Đã thanh toán</option>
+                    <option value="0">Cancel</option>
+                    <option value="1" selected>Undischarged</option>
+                    <option value="2">Discharged</option>
                 </select>
                 @if ($errors->has('state'))
                     @foreach ($errors->get('state') as $message)
@@ -104,7 +109,7 @@
                </div>
              </div>
             <div style="margin-left: 680px" class="form-row">
-                <button type="button" class="btn btn-secondary" onclick="addLaptop()" style="margin-right: 10px">Add Laptop</button>
+                <button type="button" class="btn btn-success" onclick="addLaptop()" style="margin-right: 10px">Add Laptop</button>
                 <button type="submit" class="btn btn-primary">Create</button>
             </div>
 

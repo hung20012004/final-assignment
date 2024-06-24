@@ -55,9 +55,9 @@
                     <tr>
                         <td>{{ $key+1 }}</td>
                         <td>{{ $order->id }}</td>
-                        <td>{{ $order->user->name}}</td>
+                        <td>{{ Auth::user()->name }}</td>
                         <td>{{ $order->customer->name}}</td>
-                        <td>{{ $order->created_at->format('d-m-Y H:i:s') }}</td>
+                        <td>{{ \Carbon\Carbon::parse($order->created_at)->format('H:i d/m/Y')}}</td>
                         <td>
                             @if ($order->state == 0)
                                 Cancel

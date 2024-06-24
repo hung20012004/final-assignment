@@ -10,7 +10,7 @@
         <div class="row justify-content-center mx-1 px-1">
             <div class="col-md-12 col-lg-11 col-sm-12">
                 <div class="px-4 py-5 bg-white shadow-sm mb-5 rounded">
-                    @if ($errors->any())
+                    {{-- @if ($errors->any())
                         <div class="alert alert-danger">
                             <ul>
                                 @foreach ($errors->all() as $error)
@@ -18,7 +18,7 @@
                                 @endforeach
                             </ul>
                         </div>
-                    @endif
+                    @endif --}}
                     <form action="{{ route('customers.store') }}" method="POST">
                         @csrf
                         <div class="form-group">
@@ -46,7 +46,7 @@
                         </div>
                         <div class="form-group">
                             <label for="email">Phone:</label>
-                            <input type="tel" name="phone" id="role" class="form-control" value="{{ old('phone') }}">
+                            <input type="number" name="phone" id="role" class="form-control" value="{{ old('phone') }}">
                             @if ($errors->has('phone'))
                                 @foreach ($errors->get('phone') as $message)
                                     <div style="color: red;">{{ $message }}</div>

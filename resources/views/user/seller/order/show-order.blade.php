@@ -26,13 +26,13 @@
                               <strong>ID:</strong> {{ $order->id }}
                             </li>
                             <li class="list-group-item">
-                              <strong>Seller name:</strong> {{ $order->user->name }}
+                              <strong>Seller name:</strong> {{ Auth::user()->name }}
                             </li>
                             <li class="list-group-item">
                                 <strong>Customer name:</strong> {{ $order->customer->name }}
                             </li>
                             <li class="list-group-item">
-                                <strong>Order Time:</strong> {{ $order->created_at->format('d-m-Y H:i:s')  }}
+                                <strong>Order Time:</strong> {{ \Carbon\Carbon::parse($order->created_at)->format('H:i d/m/Y')}}
                             </li>
                             <!-- Add any other fields you want to display here -->
                         </ul>

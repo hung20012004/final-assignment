@@ -22,22 +22,37 @@
              <div class="form-group">
                 <label for="name">ID:</label>
                 <input type="text" name="id" id="id" class="form-control" value="{{ old('id', $customer->id) }}" readonly>
+                
             </div>
             <div class="form-group">
                 <label for="name">Name:</label>
                 <input type="text" name="name" id="name" class="form-control" value="{{ old('name', $customer->name) }}">
+                @if ($errors->has('name'))
+                                <div style="color: red;">{{ $errors->first('name') }}</div>
+                            @endif
             </div>
             <div class="form-group">
                 <label for="email">Email:</label>
                 <input type="email" name="email" id="email" class="form-control" value="{{ old('email',$customer->email) }}">
+                @foreach ($errors->get('email') as $message)
+                                    <div style="color: red;">{{ $message }}</div>
+                                @endforeach
             </div>
             <div class="form-group">
                 <label for="address">Address:</label>
                 <input type="text" name="address" id="address" class="form-control" value="{{ old('address',$customer->address) }}">
+                @if ($errors->has('address'))
+                                <div style="color: red;">{{ $errors->first('address') }}</div>
+                            @endif
             </div>
             <div class="form-group">
                 <label for="phone">Phone:</label>
-                <input type="num" name="phone" id="phone" class="form-control" value="{{ old('phone' , $customer->phone) }}">
+                <input type="number" name="phone" id="phone" class="form-control" value="{{ old('phone' , $customer->phone) }}">
+                @if ($errors->has('phone'))
+                                @foreach ($errors->get('phone') as $message)
+                                    <div style="color: red;">{{ $message }}</div>
+                                @endforeach
+                            @endif
             </div>
             <!-- Thêm các trường thông tin khác của người dùng nếu cần -->
             <button type="submit" class="btn btn-primary">Save</button>
