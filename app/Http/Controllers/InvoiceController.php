@@ -33,7 +33,7 @@ class InvoiceController extends Controller
                 });
         }
 
-        $invoices = $query->paginate(10);
+        $invoices = $query->get();
 
         return view('user.warehouse.invoice.index-invoice', compact('invoices'));
     }
@@ -54,37 +54,32 @@ class InvoiceController extends Controller
     public function store(Request $request)
     {
         $currentUser = Auth::user();
-        $date = now()->format('Ymd');
-        $count = Invoice::whereDate('created_at', today())->count() + 1;
-        $invoiceCode = 'HDN-' . $date . '-' . str_pad($count, 4, '0', STR_PAD_LEFT);
 
         $validatedData = $request->validate([
             'provider_id' => 'required|integer|exists:providers,id',
-            'state' => 'required|integer',
-            'laptops' => 'required|array|min:1',
-            'laptops.*.laptop_id' => 'required|integer|exists:laptops,id',
-            'laptops.*.quantity' => 'required|integer|min:1',
+            'hidden_laptops' => 'required', // Đây là input ẩn chứa dữ liệu laptops
         ]);
+    
+        // Lấy dữ liệu từ hidden-laptops và chuyển đổi thành mảng PHP
+        $laptopsData = json_decode($request->input('hidden_laptops'), true);
 
         $invoice = new Invoice();
-        $invoice->invoice_code = $invoiceCode;
         $invoice->user_id = $currentUser->id;
         $invoice->provider_id = $validatedData['provider_id'];
-        $invoice->state = $validatedData['state'];
+        $invoice->state = '1';
         $invoice->save();
 
-        foreach ($validatedData['laptops'] as $laptopData) {
-            $laptop = Laptop::findOrFail($laptopData['laptop_id']);
-
+        foreach ($laptopsData as $laptop) {
             $invoiceDetail = new InvoiceDetail();
             $invoiceDetail->invoice_id = $invoice->id;
-            $invoiceDetail->laptop_id = $laptopData['laptop_id'];
-            $invoiceDetail->quantity = $laptopData['quantity'];
-            $invoiceDetail->price = $laptop->price * $laptopData['quantity'];
+            $invoiceDetail->laptop_id = $laptop['id'];
+            $invoiceDetail->quantity = $laptop['quantity'];
+            $invoiceDetail->price = $laptop['price'];
             $invoiceDetail->save();
-
-            $laptop->quantity += $laptopData['quantity'];
-            $laptop->save();
+            
+            $laptopModel = Laptop::findOrFail($laptop['id']);
+            $laptopModel->quantity += $laptop['quantity'];
+            $laptopModel->save();
         }
 
         return redirect()->route('invoices.index')->with('success', 'Hóa đơn đã được thêm thành công!');
@@ -139,20 +134,111 @@ class InvoiceController extends Controller
         $invoice->state = $validatedData['state'];
         $invoice->save();
 
-        $invoice->invoice_detail()->delete();
+        // Retrieve current order details
+        $currentInvoiceDetails = $invoice->invoice_detail->keyBy('laptop_id');
 
-        foreach ($validatedData['invoice_details'] as $invoiceDetailData) {
-            $laptop = Laptop::findOrFail($invoiceDetailData['laptop_id']);
-
-            $invoiceDetail = new InvoiceDetail();
-            $invoiceDetail->invoice_id = $invoice->id;
-            $invoiceDetail->laptop_id = $invoiceDetailData['laptop_id'];
-            $invoiceDetail->quantity = $invoiceDetailData['quantity'];
-            $invoiceDetail->price = $invoiceDetailData['price'];
-            $invoiceDetail->save();
-
-            $laptop->quantity += $invoiceDetailData['quantity'];
-            $laptop->save();
+        foreach ($validatedData['laptops'] as $laptopData) {
+            $laptopId = $laptopData['laptop_id'];
+            $newQuantity = $laptopData['quantity'];
+    
+            // Check if this laptop exists in the current order details
+            if ($currentInvoiceDetails->has($laptopId)) {
+                // If exists, update the quantity
+                $invoiceDetail = $currentInvoiceDetails[$laptopId];
+    
+                // Calculate difference in quantity
+                $difference = $newQuantity - $invoiceDetail->quantity;
+    
+                // Update order detail quantity
+                $invoiceDetail->quantity = $newQuantity;
+                $invoiceDetail->save();
+    
+                // Update quantity in the warehouse
+                $laptop = Laptop::find($laptopId);
+                if ($laptop) {
+                    $laptop->quantity += $difference;
+                    $laptop->save();
+                } else {
+                    // Handle case where laptop is not found (though it should exist due to validation)
+                    // You can add custom error handling logic here if needed
+                    // For simplicity, assuming laptop always exists based on validation
+                }
+            } else {
+                // Handle case where laptop does not exist in current order details
+                // Create new order detail and deduct quantity from warehouse
+                $invoiceDetail = new InvoiceDetail();
+                $invoiceDetail->order_id = $invoice->id;
+                $invoiceDetail->laptop_id = $laptopId;
+                $invoiceDetail->quantity = $newQuantity;
+                $invoiceDetail->save();
+    
+                // Update quantity in the warehouse
+                $laptop = Laptop::find($laptopId);
+                if ($laptop) {
+                    $laptop->quantity += $newQuantity; // Assuming new order quantity will be deducted
+                    $laptop->save();
+                } else {
+                    // Handle case where laptop is not found (though it should exist due to validation)
+                    // You can add custom error handling logic here if needed
+                    // For simplicity, assuming laptop always exists based on validation
+                }
+            }
+        }
+    
+        // Cập nhật số lượng laptop trong đơn hàng dựa trên thông tin từ hidden input
+        $newLaptops = json_decode($request->input('hidden_laptops'), true);
+        if (!empty($newLaptops)) {
+            foreach ($newLaptops as $newLaptop) {
+                $laptopId = $newLaptop['id'];
+                $quantity = $newLaptop['quantity'];
+    
+                // Kiểm tra xem laptop này có trong danh sách chi tiết đơn hàng hiện tại không
+                if ($currentInvoiceDetails->has($laptopId)) {
+                    // Nếu có, cập nhật số lượng
+    
+                     $orderDetail = $currentInvoiceDetails[$laptopId];
+    
+                // Calculate difference in quantity
+                $difference = $quantity - $invoiceDetail->quantity;
+    
+                // Update order detail quantity
+                $invoiceDetail->quantity = $quantity;
+                $invoiceDetail->save();
+    
+                // Update quantity in the warehouse
+                $laptop = Laptop::find($laptopId);
+                if ($laptop) {
+                    $laptop->quantity += $difference;
+                    $laptop->save();
+                } else {
+                    // Handle case where laptop is not found (though it should exist due to validation)
+                    // You can add custom error handling logic here if needed
+                    // For simplicity, assuming laptop always exists based on validation
+                }
+    
+                } else {
+                    // Nếu laptop không có trong danh sách chi tiết đơn hàng hiện tại, thêm mới
+                    $invoiceDetail = new InvoiceDetail();
+                    $invoiceDetail->invoice_id = $invoice->id;
+                    $invoiceDetail->laptop_id = $laptopId;
+                    $invoiceDetail->quantity = $quantity;
+    
+                    // Lấy giá của laptop nhập và tính tổng giá
+                    $laptop = Laptop::find($laptopId);
+                    if ($laptop) {
+                        $laptop->quantity+=$quantity;
+                        $invoiceDetail->price = $laptop['total'];
+                        $laptop->save();
+                    } else {
+                        // Xử lý trường hợp không tìm thấy laptop (mặc dù theo lý thuyết nó nên tồn tại do validate)
+                        // Bạn có thể thêm xử lý lỗi tùy chỉnh ở đây nếu cần thiết
+                        // Để đơn giản, giả sử laptop luôn tồn tại dựa trên validate
+                        $invoiceDetail->price = 0; // Thiết lập giá mặc định hoặc xử lý theo nhu cầu
+                    }
+    
+                    $invoiceDetail->save(); // Lưu chi tiết đơn hàng mới
+                }
+            }
         }
 
         return redirect()->route('invoices.index')->with('success', 'Hóa đơn đã được cập nhật thành công!');

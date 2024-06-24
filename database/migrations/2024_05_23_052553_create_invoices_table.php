@@ -13,12 +13,12 @@ return new class extends Migration
     {
         Schema::create('invoices', function (Blueprint $table) {
             $table->id();
-            $table->string('invoice_code')
-                  ->unique();
             $table->foreignId('user_id')
                   ->constrained();
             $table->foreignId('provider_id')
                   ->constrained();
+            $table->string('note')
+                  ->nullable();
             $table->integer('state');
             $table->timestamps();
         });

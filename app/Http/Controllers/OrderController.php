@@ -122,7 +122,7 @@ class OrderController extends Controller
     public function update(Request $request, Order $order)
     {
 
-             $validatedData = $request->validate([
+    $validatedData = $request->validate([
         'user_id' => 'nullable|integer',
         'customer_id' => 'nullable|integer',
         'state' => 'nullable|boolean',

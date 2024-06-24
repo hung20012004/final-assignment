@@ -25,53 +25,51 @@
                                 <strong>ID:</strong> {{ $invoice->id }}
                             </li>
                             <li class="list-group-item">
-                                <strong>Invoice Code:</strong> {{ $invoice->invoice_code }}
-                            </li>
-                            <li class="list-group-item">
                                 <strong>Warehouse Staff:</strong> {{ $invoice->user->name }}
                             </li>
                             <li class="list-group-item">
                                 <strong>Provider:</strong> {{ $invoice->provider->name }}
                             </li>
                             <li class="list-group-item">
-                                <strong>Created at:</strong> {{ $invoice->created_at->format('d-m-Y H:i:s') }}
+                                <strong>Created at:</strong> {{ $invoice->created_at->format('H:i d-m-Y') }}
                             </li>
                             <li class="list-group-item">
                                 <strong>Status:</strong> {{ $invoice->state == 1 ? 'Đang xử lý' : 'Đã hủy' }}
                             </li>
                         </ul>
                         <h5 class="mt-4">Laptop Details</h5>
-                        <table class="table table-bordered mt-2">
-                            <thead>
-                                <tr>
-                                    <th>Laptop Name</th>
-                                    <th>Quantity</th>
-                                    <th>Unit Price</th>
-                                    <th>Total Price</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @php
-                                    $total = 0; // Initialize total price
-                                @endphp
-                                @foreach ($invoice->invoice_detail as $invoiceDetail)
+                        <div class="table-responsive">
+                            <table class="table table-bordered mt-2">
+                                <thead>
                                     <tr>
-                                        <td>{{ $invoiceDetail->laptop->name }}</td>
-                                        <td>{{ $invoiceDetail->quantity }}</td>
-                                        <td>{{ number_format($invoiceDetail->laptop->price, 0, ',', '.') }}</td>
-                                        <td>{{ number_format($invoiceDetail->quantity * $invoiceDetail->laptop->price, 0, ',', '.') }}</td>
+                                        <th>Laptop Name</th>
+                                        <th>Quantity</th>
+                                        <th>Unit Price</th>
+                                        <th>Total Price</th>
                                     </tr>
+                                </thead>
+                                <tbody>
                                     @php
-                                        $total += $invoiceDetail->quantity * $invoiceDetail->laptop->price; // Add to total price
-                                        $invoiceDetail->price = $total;
+                                        $total = 0; // Initialize total price
                                     @endphp
-                                @endforeach
-                                <tr>
-                                    <td colspan="3"><strong>Total</strong></td>
-                                    <td><strong>{{ number_format($total, 0, ',', '.') }} đ</strong></td>
-                                </tr>
-                            </tbody>
-                        </table>
+                                    @foreach ($invoice->invoice_detail as $invoiceDetail)
+                                        <tr>
+                                            <td>{{ $invoiceDetail->laptop->name }}</td>
+                                            <td>{{ $invoiceDetail->quantity }}</td>
+                                            <td>{{ number_format($invoiceDetail->price, 0, ',', '.') }}</td>
+                                            <td>{{ number_format($invoiceDetail->quantity * $invoiceDetail->price, 0, ',', '.') }}</td>
+                                        </tr>
+                                        @php
+                                            $total += $invoiceDetail->quantity * $invoiceDetail->price; // Add to total price
+                                        @endphp
+                                    @endforeach
+                                    <tr>
+                                        <td colspan="3"><strong>Total</strong></td>
+                                        <td><strong>{{ number_format($total, 0, ',', '.') }} đ</strong></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                     <div class="card-footer">
                         <a href="{{ route('invoices.index') }}" class="btn btn-secondary">Back</a>

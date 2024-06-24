@@ -1,5 +1,5 @@
 <x-app-layout>
-    <div class="container-fluid">
+    <div class="container">
         <div class="row mt-3">
             <div class="col">
                 <x-breadcrumb :links="[
@@ -8,83 +8,149 @@
                 ]" />
             </div>
         </div>
-        <div class="row justify-content-center mt-4">
+        <div class="row justify-content-center mt-2">
             <div class="col-md-12">
                 <div class="card">
-                    <div class="card-header">
+                    <div class="card-header d-flex justify-content-between align-items-center">
                         <h5 class="card-title mb-0">Edit Invoice</h5>
                     </div>
                     <div class="card-body">
+
                         <form action="{{ route('invoices.update', $invoice) }}" method="POST">
                             @csrf
                             @method('PUT')
-                            <div class="form-group col-md-4" style="padding: 0;">
-                                <strong><label for="user_name">Warehouse Staff:</label></strong>
-                                <select name="user_id" id="user_id" class="form-control" style="text-align: center" required>
+                            <div class="form-group">
+                                <strong><label for="id">ID:</label></strong>
+                                <input type="text" name="id" id="id" class="form-control" style="text-align: center" value="{{ old('id', $invoice->id) }}" readonly>
+                            </div>
+                            <div class="form-group">
+                                <strong><label for="user_name">Seller Name:</label></strong>
+                                <select name="user_id" id="user_id" class="form-control" style="text-align: center">
                                     <option value="{{ $invoice->user_id }}">{{ $invoice->user->name }}</option>
                                     @foreach ($users as $user)
                                         <option value="{{ $user->id }}">{{ $user->name }}</option>
                                     @endforeach
                                 </select>
+                                @if ($errors->has('user_name'))
+                                    <div style="color: red;">{{ $errors->first('user_name') }}</div>
+                                @endif
                             </div>
-                            <div class="form-group col-md-4" style="padding: 0;">
-                                <strong><label for="provider_name">Provider:</label></strong>
-                                <select name="provider_id" id="provider_id" class="form-control" style="text-align: center" required>
-                                    <option value="{{ $invoice->provider_id }}">{{ $invoice->provider->name }}</option>
-                                    @foreach ($providers as $provider)
-                                        <option value="{{ $provider->id }}">{{ $provider->name }}</option>
+                            <div class="form-group">
+                                <strong><label for="customer_name">Customer Name:</label></strong>
+                                <select name="customer_id" id="customer_id" class="form-control" style="text-align: center">
+                                    <option value="{{ $invoice->customer_id }}">{{ $invoice->customer->name }}</option>
+                                    @foreach ($customers as $customer)
+                                        <option value="{{ $customer->id }}">{{ $customer->name }}</option>
                                     @endforeach
                                 </select>
+                                @if ($errors->has('customer_name'))
+                                    @foreach ($errors->get('customer_name') as $message)
+                                        <div style="color: red;">{{ $message }}</div>
+                                    @endforeach
+                                @endif
                             </div>
-                            <div id="invoice-details-container">
+                            <div id="laptop-container">
                                 @php $total = 0; @endphp
                                 @foreach ($invoice->invoice_detail as $index => $invoiceDetail)
-                                    <div class="form-row invoice-detail-item" data-index="{{ $index }}">
+                                    <div class="form-row laptop-item" data-index="{{ $index }}">
                                         <div class="form-group col-md-4">
                                             <strong><label for="laptop_name">Laptop:</label></strong>
-                                            <select name="invoice_details[{{ $index }}][laptop_id]" class="form-control laptop-select" onchange="updateTotalPrice()">
+                                            <select name="laptops[{{ $index }}][laptop_id]" class="form-control laptop-select" onchange="updateTotalPrice()" style="text-align: center">
                                                 <option value="{{ $invoiceDetail->laptop_id }}" data-price="{{ $invoiceDetail->laptop->price }}">{{ $invoiceDetail->laptop->name }}</option>
                                                 @foreach ($laptops as $laptop)
-                                                    <option value="{{ $laptop->id }}" data-price="{{ $laptop->price }}">{{ $laptop->name }}</option>
+                                                    <option value="{{ $laptop->id }}" data-price="{{ $laptop->price }}" {{ old("laptops.{$index}.laptop_id") == $laptop->id ? 'selected' : '' }}>{{ $laptop->name }}</option>
                                                 @endforeach
                                             </select>
+                                            @error("laptops.{$index}.laptop_id")
+                                                <div style="color: red;">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                        <div class="form-group col-md-2">
+                                            <strong><label for="unit_price">Unit Price:</label></strong>
+                                            <input type="number" name="laptops[{{ $index }}][unit_price]" class="form-control unit-price-input" value="{{ old("laptops.{$index}.unit_price", $invoiceDetail->laptop->price) }}" oninput="updateTotalPrice()" style="text-align: center">
+                                            @error("laptops.{$index}.unit_price")
+                                                <div style="color: red;">{{ $message }}</div>
+                                            @enderror
                                         </div>
                                         <div class="form-group col-md-2">
                                             <strong><label for="quantity">Quantity:</label></strong>
-                                            <input type="number" name="invoice_details[{{ $index }}][quantity]" class="form-control quantity-input" value="{{ old("invoice_details.{$index}.quantity", $invoiceDetail->quantity) }}" oninput="updateTotalPrice()">
+                                            <input type="number" name="laptops[{{ $index }}][quantity]" class="form-control quantity-input" value="{{ old("laptops.{$index}.quantity", $invoiceDetail->quantity) }}" oninput="updateTotalPrice()" style="text-align: center">
+                                            @error("laptops.{$index}.quantity")
+                                                <div style="color: red;">{{ $message }}</div>
+                                            @enderror
                                         </div>
                                         <div class="form-group col-md-2">
-                                            <strong><label for="price">Price:</label></strong>
-                                            <input type="number" name="invoice_details[{{ $index }}][price]" class="form-control price-input" value="{{ old("invoice_details.{$index}.price", $invoiceDetail->price) }}" oninput="updateTotalPrice()">
-                                        </div>
-                                        <div class="remove-button-container form-group col-md-2 d-flex align-items-end">
-                                            <button type="button" class="btn btn-outline-danger" onclick="removeInvoiceDetail(this)">Remove</button>
+                                            <strong><label>Total Price:</label></strong>
+                                            <div class="total-price" style="text-align: center">{{ number_format($invoiceDetail->quantity * $invoiceDetail->laptop->price, 0, ',', '.') }} VND</div>
                                         </div>
                                     </div>
-                                    @php $total += $invoiceDetail->quantity * $invoiceDetail->price; @endphp
                                 @endforeach
                             </div>
-                            <div class="form-row">
-                                <div class="form-group col-md-6">
-                                    <strong><label for="state">State:</label></strong>
-                                    <select name="state" id="state" class="form-control" style="text-align: center">
-                                        <option value="1" {{ $invoice->state == 1 ? 'selected' : '' }}>Đang xử lý</option>
-                                        <option value="0" {{ $invoice->state == 0 ? 'selected' : '' }}>Hủy</option>
-                                    </select>
-                                    @error('state')
+                            <div class="form-group">
+                                <strong><label for="state">State:</label></strong>
+                                <select name="state" id="state" class="form-control" style="text-align: center">
+                                    <option value="1" {{ $invoice->state == 1 ? 'selected' : '' }}>Processing</option>
+                                    <option value="0" {{ $invoice->state == 0 ? 'selected' : '' }}>Not Processed</option>
+                                </select>
+                                @if ($errors->has('state'))
+                                    @foreach ($errors->get('state') as $message)
                                         <div style="color: red;">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                                <div class="form-group col-md-6">
-                                    <strong><label for="total">Total:</label></strong>
-                                    <label id="total" class="form-control" style="text-align: center; background-color: #e6ffff">{{ number_format($total, 0, ',', '.') }} đ</label>
-                                </div>
-                                <input type="hidden" id="hiddenTotal" name="hiddenTotal" value="{{ $total }}">
+                                    @endforeach
+                                @endif
                             </div>
-                            <div class="card-footer d-flex justify-content-between">
-                                <a href="{{ route('invoices.index') }}" class="btn btn-secondary">Back</a>
-                                <button type="button" class="btn btn-success" onclick="addInvoiceDetail()">Add Another Laptop</button>
-                                <button type="submit" class="btn btn-primary">Save</button>
+                            <div class="row justify-content-center">
+                                <div class="col-md-12">
+                                    <div class="px-4 py-2 bg-white shadow-md mt-3 rounded">
+                                        <div class="form-row">
+                                            <div class="form-group col-md-4">
+                                                <strong><label for="new_laptop_name">New Laptop Name:</label></strong>
+                                                <select id="new_laptop_name" class="form-control" style="text-align: center">
+                                                    <option value=""></option>
+                                                    @foreach ($laptops as $laptop)
+                                                        <option value="{{ $laptop->id }}" data-price="{{ $laptop->price }}">{{ $laptop->name }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                            <div class="form-group col-md-2">
+                                                <strong><label for="new_unit_price">Unit Price:</label></strong>
+                                                <input type="number" id="new_unit_price" class="form-control" style="text-align: center">
+                                            </div>
+                                            <div class="form-group col-md-2">
+                                                <strong><label for="new_laptop_quantity">Quantity:</label></strong>
+                                                <input type="number" id="new_laptop_quantity" class="form-control" style="text-align: center">
+                                            </div>
+                                            <div class="form-group col-md-1">
+                                                <button type="button" class="btn btn-success" style="margin-top: 30px;" onclick="addNewLaptop()">Add</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row justify-content-center">
+                                <div class="col-md-12">
+                                    <div class="px-4 py-2 bg-white shadow-md mb-2 rounded">
+                                        <table id="laptop-list" class="table table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>ID</th>
+                                                    <th>Laptop Name</th>
+                                                    <th>Unit Price</th>
+                                                    <th>Quantity</th>
+                                                    <th>Total</th>
+                                                    <th>Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                            </tbody>
+                                        </table>
+                                        <div style="text-align: right"><strong>Total Amount: </strong><span id="total-amount">0 VND</span></div>
+                                        <!-- Hidden inputs for storing laptops data -->
+                                        <input type="hidden" id="hidden-laptops" name="hidden_laptops">
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="margin-left: 980px; margin-bottom: 10px">
+                                <div style="padding-top: 5px"><button type="submit" class="btn btn-primary">Save</button></div>
                             </div>
                         </form>
                     </div>
@@ -95,71 +161,93 @@
 </x-app-layout>
 
 <script>
-    function addInvoiceDetail() {
-        const invoiceDetailsContainer = document.getElementById('invoice-details-container');
-        const invoiceDetails = invoiceDetailsContainer.querySelectorAll('.invoice-detail-item');
-        const newIndex = invoiceDetails.length;
+    let laptopCount = 0;
+    let totalAmount = 0;
+    let laptopsData = []; // Array to store laptops data
 
-        const newInvoiceDetailItem = document.createElement('div');
-        newInvoiceDetailItem.classList.add('form-row', 'invoice-detail-item');
-        newInvoiceDetailItem.setAttribute('data-index', newIndex);
+    function updateTotalPrice(element) {
+        const laptopItem = $(element).closest('.laptop-item');
+        const unitPrice = parseFloat(laptopItem.find('.unit-price-input').val());
+        const quantity = parseInt(laptopItem.find('.quantity-input').val());
+        const totalPrice = unitPrice * quantity;
+        laptopItem.find('.total-price').text(totalPrice.toLocaleString('vi-VN') + ' VND');
 
-        newInvoiceDetailItem.innerHTML = `
-            <div class="form-group col-md-4">
-                <strong><label for="laptop_name">Laptop:</label></strong>
-                <select name="invoice_details[${newIndex}][laptop_id]" class="form-control laptop-select" onchange="updateTotalPrice()">
-                    @foreach ($laptops as $laptop)
-                        <option value="{{ $laptop->id }}" data-price="{{ $laptop->price }}">{{ $laptop->name }}</option>
-                    @endforeach
-                </select>
-            </div>
-            <div class="form-group col-md-2">
-                <strong><label for="quantity">Quantity:</label></strong>
-                <input type="number" name="invoice_details[${newIndex}][quantity]" class="form-control quantity-input" value="" oninput="updateTotalPrice()">
-            </div>
-            <div class="form-group col-md-2">
-                <strong><label for="price">Price:</label></strong>
-                <input type="number" name="invoice_details[${newIndex}][price]" class="form-control price-input" value="" oninput="updateTotalPrice()">
-            </div>
-            <div class="remove-button-container form-group col-md-2 d-flex align-items-end">
-                <button type="button" class="btn btn-outline-danger" onclick="removeInvoiceDetail(this)">Remove</button>
-            </div>
+        // Update total amount
+        totalAmount = 0;
+        $('.laptop-item').each(function() {
+            const unitPrice = parseFloat($(this).find('.unit-price-input').val());
+            const quantity = parseInt($(this).find('.quantity-input').val());
+            totalAmount += unitPrice * quantity;
+        });
+        $('#total-amount').text(totalAmount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' }));
+
+        // Update hidden input
+        updateHiddenInput();
+    }
+
+    function addNewLaptop() {
+        const laptopSelect = $('#new_laptop_name');
+        const laptopId = laptopSelect.val();
+        const laptopName = laptopSelect.find('option:selected').text();
+        const unitPrice = parseFloat($('#new_unit_price').val());
+        const quantity = parseInt($('#new_laptop_quantity').val());
+
+        if (!laptopId || !unitPrice || !quantity) {
+            alert('Please select a laptop and enter unit price and quantity.');
+            return;
+        }
+
+        const laptopRow = `
+            <tr data-id="${laptopId}">
+                <td>${laptopId}</td>
+                <td>${laptopName}</td>
+                <td><input type="number" class="form-control unit-price-input" value="${unitPrice}" oninput="updateTotalPrice(this)" style="text-align: center"></td>
+                <td><input type="number" class="form-control quantity-input" value="${quantity}" oninput="updateTotalPrice(this)" style="text-align: center"></td>
+                <td class="total-price" style="text-align: center">${(unitPrice * quantity).toLocaleString('vi-VN')} VND</td>
+                <td><button type="button" class="btn btn-danger btn-sm remove-laptop" onclick="removeLaptop(this)">Remove</button></td>
+            </tr>
         `;
 
-        invoiceDetailsContainer.appendChild(newInvoiceDetailItem);
-        updateTotalPrice();
+        $('#laptop-list tbody').append(laptopRow);
+
+        const laptopData = {
+            id: laptopId,
+            name: laptopName,
+            unit_price: unitPrice,
+            quantity: quantity,
+            total: unitPrice * quantity
+        };
+        laptopsData.push(laptopData);
+
+        // Update total amount
+        totalAmount += unitPrice * quantity;
+        $('#total-amount').text(totalAmount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' }));
+
+        // Update hidden input
+        updateHiddenInput();
+
+        // Reset the select and quantity input
+        laptopSelect.val('');
+        $('#new_unit_price').val('');
+        $('#new_laptop_quantity').val('');
     }
 
-    function removeInvoiceDetail(button) {
-        const invoiceDetailItem = button.closest('.invoice-detail-item');
+    function removeLaptop(button) {
+        const row = $(button).closest('tr');
+        const laptopId = row.data('id');
+        const unitPrice = parseFloat(row.find('.unit-price-input').val());
+        const quantity = parseInt(row.find('.quantity-input').val());
 
-        if (invoiceDetailItem) {
-            invoiceDetailItem.remove();
-            updateTotalPrice();
-        }
+        totalAmount -= unitPrice * quantity;
+        $('#total-amount').text(totalAmount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' }));
+
+        row.remove();
+
+        laptopsData = laptopsData.filter(laptop => laptop.id != laptopId);
+        updateHiddenInput();
     }
 
-    function updateTotalPrice() {
-        const invoiceDetailItems = document.querySelectorAll('.invoice-detail-item');
-        let total = 0;
-
-        invoiceDetailItems.forEach(item => {
-            const laptopSelect = item.querySelector('.laptop-select');
-            const priceInput = item.querySelector('.price-input');
-            const quantityInput = item.querySelector('.quantity-input');
-
-            if (laptopSelect && priceInput && quantityInput) {
-                const selectedLaptop = laptopSelect.options[laptopSelect.selectedIndex];
-                const price = parseFloat(selectedLaptop.getAttribute('data-price')) || 0;
-                const quantity = parseFloat(quantityInput.value) || 0;
-                const totalPrice = price * quantity;
-                total += totalPrice;
-                priceInput.value = price; // Update price input with selected laptop's price
-            }
-        });
-
-        const totalElement = document.getElementById('total');
-        totalElement.textContent = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(total);
-        document.getElementById('hiddenTotal').value = total;
+    function updateHiddenInput() {
+        $('#hidden-laptops').val(JSON.stringify(laptopsData));
     }
 </script>
