@@ -53,21 +53,19 @@ class InvoiceController extends Controller
      */
     public function store(Request $request)
     {
-        // Nhân viên kho đang tạo đơn
         $currentUser = Auth::user();
-        // Tạo mã hóa đơn tự động
-        $date = now()->format('Ymd'); // Lấy ngày tháng hiện tại dưới dạng YYYYMMDD
-        $count = Invoice::whereDate('created_at', today())->count() + 1; // Đếm số hóa đơn đã được tạo trong ngày và tăng thêm 1
-        $invoiceCode = 'HDN-' . $date . '-' . str_pad($count, 4, '0', STR_PAD_LEFT); // Ghép nối thành mã hóa đơn
-          
+        $date = now()->format('Ymd');
+        $count = Invoice::whereDate('created_at', today())->count() + 1;
+        $invoiceCode = 'HDN-' . $date . '-' . str_pad($count, 4, '0', STR_PAD_LEFT);
+
         $validatedData = $request->validate([
             'provider_id' => 'required|integer|exists:providers,id',
             'state' => 'required|integer',
             'laptops' => 'required|array|min:1',
-            'laptops.*.laptop_id' => 'required|integer',
+            'laptops.*.laptop_id' => 'required|integer|exists:laptops,id',
             'laptops.*.quantity' => 'required|integer|min:1',
         ]);
-        
+
         $invoice = new Invoice();
         $invoice->invoice_code = $invoiceCode;
         $invoice->user_id = $currentUser->id;
@@ -75,21 +73,21 @@ class InvoiceController extends Controller
         $invoice->state = $validatedData['state'];
         $invoice->save();
 
-        foreach ($validatedData['laptops'] as $laptopData) { 
+        foreach ($validatedData['laptops'] as $laptopData) {
+            $laptop = Laptop::findOrFail($laptopData['laptop_id']);
+
             $invoiceDetail = new InvoiceDetail();
             $invoiceDetail->invoice_id = $invoice->id;
             $invoiceDetail->laptop_id = $laptopData['laptop_id'];
             $invoiceDetail->quantity = $laptopData['quantity'];
-            $laptop = Laptop::find($laptopData['laptop_id']);
-            if ($laptop) {
-                $invoiceDetail->price = $laptop->price * $laptopData['quantity'];
-            } else {
-                $invoiceDetail->price = 0; // Set a defahandle as neededult price or 
-            }
+            $invoiceDetail->price = $laptop->price * $laptopData['quantity'];
             $invoiceDetail->save();
+
+            $laptop->quantity += $laptopData['quantity'];
+            $laptop->save();
         }
 
-        return redirect()->route('invoices.index')->with('success', 'Invoice added successfully!');
+        return redirect()->route('invoices.index')->with('success', 'Hóa đơn đã được thêm thành công!');
     }
 
     /**
@@ -109,54 +107,14 @@ class InvoiceController extends Controller
     {
         $invoice = Invoice::findOrFail($invoice->id);
         $users = User::where('role', 'warehouse')->get();
-    $providers = Provider::all();
-    $laptops = Laptop::all();
+        $providers = Provider::all();
+        $laptops = Laptop::all();
 
     return view('user.warehouse.invoice.edit-invoice', compact('invoice', 'users', 'providers', 'laptops'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    // public function update(Request $request, Invoice $invoice)
-    // {
-    //     $validatedData = $request->validate([
-    //         'user_id' => 'required|exists:users,id',
-    //         'provider_id' => 'required|exists:providers,id',
-    //         'state' => 'nullable|integer',
-    //         'laptops' => 'nullable|array|min:1',
-    //         'laptops.*.laptop_id' => 'required|exists:laptops,id',
-    //         'laptops.*.quantity' => 'required|integer|min:1',
-    //     ]);
-
-    //     $invoice->user_id = $validatedData['user_id'];
-    //     $invoice->provider_id = $validatedData['provider_id'];
-    //     $invoice->state = $validatedData['state'];
-    //     $invoice->save();
-
-    //     $invoice->invoice_detail()->delete();
-    //     // Iterate through each laptop in the request and create corresponding OrderDetail
-    //     foreach ($validatedData['laptops'] as $laptopData) {
-    //         $invoiceDetail = new InvoiceDetail();
-    //         $invoiceDetail->invoice_id = $invoice->id; // Associate the order detail with the newly created order
-    //         $invoiceDetail->laptop_id = $laptopData['laptop_id'];
-    //         $invoiceDetail->quantity = $laptopData['quantity'];
-
-    //         // Retrieve the price of the laptop from the database and calculate total price
-    //         $laptop = Laptop::find($laptopData['laptop_id']);
-    //         if ($laptop) {
-    //             $invoiceDetail->price = $laptop->price * $laptopData['quantity'];
-    //         } else {
-    //             $invoiceDetail->price = 0; // Set a default price or handle as needed
-    //         }
-
-    //         $invoiceDetail->save(); // Save the order detail
-    //     }
-    //     return redirect()->route('invoices.index', $invoice)->with('success', 'Invoice updated successfully!');
-    // }
     public function update(Request $request, Invoice $invoice)
     {
-        // dd($request->all());
         $validatedData = $request->validate([
             'user_id' => 'required|exists:users,id',
             'provider_id' => 'required|exists:providers,id',
@@ -164,8 +122,17 @@ class InvoiceController extends Controller
             'invoice_details' => 'nullable|array|min:1',
             'invoice_details.*.laptop_id' => 'required|exists:laptops,id',
             'invoice_details.*.quantity' => 'required|integer|min:1',
-            'invoice_details.*.price' => 'required|numeric|min:0', // Ensure price is also validated
+            'invoice_details.*.price' => 'required|numeric|min:0',
         ]);
+
+        // Khôi phục lại số lượng của các chi tiết hóa đơn trước đó
+        foreach ($invoice->invoice_detail as $invoiceDetail) {
+            $laptop = Laptop::find($invoiceDetail->laptop_id);
+            if ($laptop) {
+                $laptop->quantity -= $invoiceDetail->quantity;
+                $laptop->save();
+            }
+        }
 
         $invoice->user_id = $validatedData['user_id'];
         $invoice->provider_id = $validatedData['provider_id'];
@@ -174,28 +141,43 @@ class InvoiceController extends Controller
 
         $invoice->invoice_detail()->delete();
 
-        // Iterate through each invoice detail in the request and create corresponding InvoiceDetail
         foreach ($validatedData['invoice_details'] as $invoiceDetailData) {
+            $laptop = Laptop::findOrFail($invoiceDetailData['laptop_id']);
+
             $invoiceDetail = new InvoiceDetail();
-            $invoiceDetail->invoice_id = $invoice->id; // Associate the invoice detail with the invoice
+            $invoiceDetail->invoice_id = $invoice->id;
             $invoiceDetail->laptop_id = $invoiceDetailData['laptop_id'];
             $invoiceDetail->quantity = $invoiceDetailData['quantity'];
-            $invoiceDetail->price = $invoiceDetailData['price']; // Use the submitted price
+            $invoiceDetail->price = $invoiceDetailData['price'];
+            $invoiceDetail->save();
 
-            $invoiceDetail->save(); // Save the invoice detail
+            $laptop->quantity += $invoiceDetailData['quantity'];
+            $laptop->save();
         }
 
-        return redirect()->route('invoices.index')->with('success', 'Invoice updated successfully!');
+        return redirect()->route('invoices.index')->with('success', 'Hóa đơn đã được cập nhật thành công!');
     }
+
     /**
      * Remove the specified resource from storage.
      */
     public function destroy(Invoice $invoice)
     {
-         $invoice->delete();
-         $invoice->invoice_detail()->delete();
-         return redirect()->route('invoices.index')->with('success', 'Invoice deleted successfully!');
+        // Khôi phục lại số lượng của các chi tiết hóa đơn
+        foreach ($invoice->invoice_detail as $invoiceDetail) {
+            $laptop = Laptop::find($invoiceDetail->laptop_id);
+            if ($laptop) {
+                $laptop->quantity -= $invoiceDetail->quantity;
+                $laptop->save();
+            }
+        }
+
+        $invoice->delete();
+        $invoice->invoice_detail()->delete();
+
+        return redirect()->route('invoices.index')->with('success', 'Hóa đơn đã được xóa thành công!');
     }
+
     public function export()
     {
         return Excel::download(new InvoicesExport, 'invoice.xlsx');
