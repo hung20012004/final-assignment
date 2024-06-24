@@ -38,9 +38,9 @@
                                 <thead class="bg-light text-black text-center">
                                     <tr>
                                         <th>ID</th>
-                                        <th>Invoice Code</th>
-                                        <th>Staff Name</th>
+                                        <th>Warehouse Staff</th>
                                         <th>Provider Name</th>
+                                        <th>Time</th>
                                         <th>State</th>
                                         <th>Actions</th>
                                     </tr>
@@ -49,9 +49,9 @@
                                     @foreach ($invoices as $invoice)
                                         <tr>
                                             <td class="text-center">{{ $invoice->id }}</td>
-                                            <td>{{ $invoice->invoice_code }}</td>
                                             <td>{{ $invoice->user->name }}</td>
                                             <td>{{ $invoice->provider->name }}</td>
+                                            <td>{{ $invoice->created_at->format('H:i d-m-Y') }}</td>
                                             <td class="text-center">
                                                 @if($invoice->state == 2)
                                                     Đã xử lý
@@ -88,10 +88,11 @@
                 // Add additional DataTables configuration options if needed
             });
         });
-        // Function xác nhận xóa
+
+        // Function to confirm deletion
         function confirmDelete(id, code) {
             if (confirm(`Bạn có chắc muốn xóa hóa đơn với mã "${code}" không?`)) {
-                // Nếu xác nhận xóa, submit form xóa tương ứng
+                // If confirmed, submit the corresponding delete form
                 document.getElementById('delete-form-' + id).submit();
             }
         }
